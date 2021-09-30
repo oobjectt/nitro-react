@@ -3,6 +3,7 @@ import { Reducer } from 'react';
 import { FurnitureItem } from '../common/FurnitureItem';
 import { addFurnitureItem, processFurniFragment, removeFurniItemById } from '../common/FurnitureUtilities';
 import { GroupItem } from '../common/GroupItem';
+import { SetInventoryGroupItems } from '../common/InventoryGroupItems';
 import { TradeState } from '../common/TradeState';
 import { TradeUserData } from '../common/TradeUserData';
 import { parseTradeItems } from '../common/TradingUtilities';
@@ -64,7 +65,9 @@ export const InventoryFurnitureReducer: Reducer<IInventoryFurnitureState, IInven
     switch(action.type)
     {
         case InventoryFurnitureActions.SET_NEEDS_UPDATE:
-            return { ...state, needsFurniUpdate: (action.payload.flag || false) };
+            state = { ...state, needsFurniUpdate: (action.payload.flag || false) };
+
+            break;
         case InventoryFurnitureActions.SET_GROUP_ITEM: {
             let groupItem = (action.payload.groupItem || state.groupItem || null);
 
@@ -79,14 +82,18 @@ export const InventoryFurnitureReducer: Reducer<IInventoryFurnitureState, IInven
 
             groupItem = (state.groupItems[index] || null);
 
-            return { ...state, groupItem };
+            state ={ ...state, groupItem };
+
+            break;
         }
         case InventoryFurnitureActions.PROCESS_FRAGMENT: {
             const groupItems = [ ...state.groupItems ];
 
             processFurniFragment(groupItems, (action.payload.fragment || null), (action.payload.unseenTracker || null));
 
-            return { ...state, groupItems };
+            state = { ...state, groupItems };
+
+            break;
         }
         case InventoryFurnitureActions.ADD_OR_UPDATE_FURNITURE: {
             const groupItems = [ ...state.groupItems ];
@@ -143,14 +150,18 @@ export const InventoryFurnitureReducer: Reducer<IInventoryFurnitureState, IInven
                 }
             }
 
-            return { ...state, groupItems };
+            state = { ...state, groupItems };
+
+            break;
         }
         case InventoryFurnitureActions.REMOVE_FURNITURE: {
             const groupItems = [ ...state.groupItems ];
 
             removeFurniItemById(action.payload.itemId, groupItems);
 
-            return { ...state, groupItems };
+            state = { ...state, groupItems };
+
+            break;
         }
         case InventoryFurnitureActions.SET_TRADE_DATA: {
             const tradeData = { ...state.tradeData };
@@ -265,9 +276,15 @@ export const InventoryFurnitureReducer: Reducer<IInventoryFurnitureState, IInven
                 for(const groupItem of groupItems) groupItem.lockItemIds(tradeIds);
             }
 
-            return { ...state, groupItems, tradeData };
+            state = { ...state, groupItems, tradeData };
+
+            break;
         }
         default:
             return state;
     }
+
+    SetInventoryGroupItems(state.groupItems);
+
+    return state;
 }
