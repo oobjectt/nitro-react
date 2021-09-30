@@ -15,13 +15,13 @@ export const CraftingRecipesView: FC<CraftingRecipesViewProps> = props =>
     return (
         <>
             <div>{LocalizeText('crafting.title.products')}</div>
-            <NitroCardGridView columns={ recipes.length }>
+            <NitroCardGridView columns={ recipes ? recipes.length : 0 }>
             {
                 recipes && recipes.map( (item, index) =>
                     {
                         const itemData = GetSessionDataManager().getFloorItemDataByName(item.itemName);
                         return (
-                            <NitroCardGridItemView itemImage={ getImageUrl(itemData.id) } itemActive={ false } />
+                            <NitroCardGridItemView key={index} itemImage={ getImageUrl(itemData.id) } itemActive={ false } />
                         )
                     }
                 )

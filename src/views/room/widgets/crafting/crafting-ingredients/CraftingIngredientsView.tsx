@@ -21,7 +21,7 @@ export const CraftingIngredientsView: FC<CraftingIngredientsViewProps> = props =
                     {
                         const itemData = GetSessionDataManager().getFloorItemDataByName(item);
                         return (
-                            <NitroCardGridItemView itemImage={ getImageUrl(itemData.id) } itemActive={ false } />
+                            <NitroCardGridItemView key={index} itemImage={ getImageUrl(itemData.id) } itemActive={ false } />
                         )
                     }
                 )
