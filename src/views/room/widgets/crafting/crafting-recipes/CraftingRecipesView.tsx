@@ -1,6 +1,7 @@
 import { FC, useCallback } from 'react';
 import { GetRoomEngine, GetSessionDataManager, LocalizeText } from '../../../../../api';
-import { NitroCardGridItemView, NitroCardGridView } from '../../../../../layout';
+import { NitroCardGridItemView, NitroCardGridView, NitroLayoutFlexColumn } from '../../../../../layout';
+import { NitroLayoutBase } from '../../../../../layout/base';
 import { CraftingRecipesViewProps } from './CraftingRecipesView.types';
 
 export const CraftingRecipesView: FC<CraftingRecipesViewProps> = props =>
@@ -13,20 +14,16 @@ export const CraftingRecipesView: FC<CraftingRecipesViewProps> = props =>
     }, []);
     
     return (
-        <>
-            <div>{LocalizeText('crafting.title.products')}</div>
-            <NitroCardGridView columns={ recipes ? recipes.length : 0 }>
-            {
-                recipes && recipes.map( (item, index) =>
+        <NitroLayoutFlexColumn className="h-100" gap={ 1 } overflow="hidden">
+            <NitroLayoutBase className="flex-shrink-0 bg-muted text-center rounded fw-bold text-black text-truncate">{ LocalizeText('crafting.title.products') }</NitroLayoutBase>
+            <NitroCardGridView>
+                { recipes && (recipes.length > 0) && recipes.map((recipe, index) =>
                     {
-                        const itemData = GetSessionDataManager().getFloorItemDataByName(item.itemName);
-                        return (
-                            <NitroCardGridItemView key={index} itemImage={ getImageUrl(itemData.id) } itemActive={ false } />
-                        )
-                    }
-                )
-            }
+                        const furniData = GetSessionDataManager().getFloorItemDataByName(recipe.itemName);
+
+                        return <NitroCardGridItemView key={index} itemImage={ getImageUrl(furniData.id) } itemActive={ false } />;
+                    }) }
             </NitroCardGridView>
-        </>
+        </NitroLayoutFlexColumn>
     )
 }

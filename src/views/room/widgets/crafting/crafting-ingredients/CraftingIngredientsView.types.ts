@@ -1,4 +1,4 @@
 export interface CraftingIngredientsViewProps
 {
-    ingredients: string[]
+    ingredients: string[];
 }
