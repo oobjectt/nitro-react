@@ -1,47 +1,28 @@
 .nitro-achievements {
-    width: 650px;
+    width: $achievement-width;
+    height: $achievement-height;
+}
 
-    .content-area {
-        min-height: 376px;
-        height: 376px;
-    }
+.nitro-achievements-category-grid {
+    --nitro-grid-column-min-width: 80px !important;
 
-    .score {
-        border-color: $grid-border-color !important;
-        background-color: $grid-bg-color;
-    }
+    .grid-item {
+        height: 80px;
+        max-height: 80px;
 
-    .category {
-        .category-score {
-            margin-top: 43.5px;
+        .achievement-score {
+            top: 50px;
         }
     }
+}
 
-    .achievements {
-        height: 230px;
-        overflow-y: auto;
-        overflow-x: hidden;
+.nitro-achievements-back-arrow {
+    background: url('../../assets/images/achievements/back-arrow.png') no-repeat center;
+    width: 33px;
+    height: 34px;
+}
 
-        .achievement {
-            border-color: $grid-border-color !important;
-            background-color: $grid-bg-color;
-            cursor: pointer;
-        
-            &.active {
-                border-color: $grid-active-border-color !important;
-                background-color: $grid-active-bg-color;
-            }
-    
-            &.gray {
-                div {
-                    filter: grayscale(1);
-                    opacity: .5;
-                }
-            }
-    
-            div {
-                height: 40px;
-            }
-        }
-    }
+.nitro-achievements-badge-image {
+    width: 80px;
+    height: 80px;
 }

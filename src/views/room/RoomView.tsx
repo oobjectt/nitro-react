@@ -52,7 +52,7 @@ export const RoomView: FC<RoomViewProps> = props =>
         GetNitroInstance().renderer.resize(window.innerWidth, window.innerHeight);
 
         const canvasId = 1;
-        
+
         const displayObject = GetRoomEngine().getRoomInstanceDisplay(roomSession.roomId, canvasId, GetNitroInstance().width, GetNitroInstance().height, RoomGeometry.SCALE_ZOOMED_IN);
 
         if(!displayObject) return;

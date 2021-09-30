@@ -2,11 +2,14 @@ import { ColorConverter, GetSellablePetPalettesComposer, SellablePetPaletteData 
 import { FC, useEffect, useMemo, useState } from 'react';
 import { GetProductDataForLocalization, LocalizeText } from '../../../../../../api';
 import { SendMessageHook } from '../../../../../../hooks/messages/message-event';
+import { NitroCardGridItemView, NitroCardGridView, NitroLayoutFlexColumn, NitroLayoutGrid, NitroLayoutGridColumn } from '../../../../../../layout';
+import { NitroLayoutBase } from '../../../../../../layout/base';
 import { PetImageView } from '../../../../../shared/pet-image/PetImageView';
-import { GetCatalogPageImage, GetCatalogPageText, GetPetAvailableColors, GetPetIndexFromLocalization } from '../../../../common/CatalogUtilities';
+import { GetPetAvailableColors, GetPetIndexFromLocalization } from '../../../../common/CatalogUtilities';
 import { useCatalogContext } from '../../../../context/CatalogContext';
 import { CatalogActions } from '../../../../reducers/CatalogReducer';
 import { CatalogRoomPreviewerView } from '../../../catalog-room-previewer/CatalogRoomPreviewerView';
+import { CatalogPageDetailsView } from '../../../page-details/CatalogPageDetailsView';
 import { CatalogLayoutPetViewProps } from './CatalogLayoutPetView.types';
 import { CatalogLayoutPetPurchaseView } from './purchase/CatalogLayoutPetPurchaseView';
 
@@ -139,44 +142,45 @@ export const CatalogLayoutPetView: FC<CatalogLayoutPetViewProps> = props =>
     if(!activeOffer) return null;
 
     return (
-        <div className="row h-100 nitro-catalog-layout-pets">
-            <div className="col-7 h-100">
-                <div className="row row-cols-5 align-content-start g-0 mb-n1 w-100 h-100 overflow-auto catalog-offers-container single-bundle-items-container">
-                    { colorsShowing && (sellableColors.length > 0) && sellableColors.map((colorSet, index) =>
-                        {
-                            return <div key={ index } className="col pe-1 pb-1 catalog-offer-item-container">
-                                <div className={ 'position-relative border border-2 rounded catalog-offer-item cursor-pointer ' + ((selectedColorIndex === index) ? 'active ' : '') } style={ { backgroundColor: ColorConverter.int2rgb(colorSet[0]) } } onClick={ event => setSelectedColorIndex(index) }>
-                                </div>
-                            </div>;
-                        })}
+        <NitroLayoutGrid>
+            <NitroLayoutGridColumn size={ 7 }>
+                <NitroCardGridView>
                     { !colorsShowing && (sellablePalettes.length > 0) && sellablePalettes.map((palette, index) =>
                         {
-                            return <div key={ index } className="col pe-1 pb-1 catalog-offer-item-container">
-                                <div className={ 'position-relative border border-2 rounded catalog-offer-item cursor-pointer ' + ((selectedPaletteIndex === index) ? 'active ' : '') } onClick={ event => setSelectedPaletteIndex(index) }>
+                            return (
+                                <NitroCardGridItemView key={ index } itemActive={ (selectedPaletteIndex === index) } onClick={ event => setSelectedPaletteIndex(index) }>
                                     <PetImageView typeId={ petIndex } paletteId={ palette.paletteId } direction={ 2 } headOnly={ true } />
-                                </div>
-                            </div>;
-                        }) }
-                </div>
-            </div>
-            { (petIndex === -1) &&
-                <div className="position-relative d-flex flex-column col-5 justify-content-center align-items-center">
-                    <div className="d-block mb-2">
-                        <img alt="" src={ GetCatalogPageImage(pageParser, 1) } />
-                    </div>
-                    <div className="fs-6 text-center text-black lh-sm overflow-hidden">{ GetCatalogPageText(pageParser, 0) }</div>
-                </div> }
-            { (petIndex >= 0) &&
-                <div className="position-relative d-flex flex-column col-5">
-                    <CatalogRoomPreviewerView roomPreviewer={ roomPreviewer } height={ 140 }>
-                        { (petIndex > -1 && petIndex <= 7) &&
-                            <button type="button" className= { 'btn btn-primary btn-sm color-button ' + (colorsShowing ? 'active ' : '') } onClick={ event => setColorsShowing(!colorsShowing) }>
-                                <i className="fas fa-fill-drip" />
-                            </button> }
-                    </CatalogRoomPreviewerView>
-                    <div className="fs-6 text-black mt-1 overflow-hidden">{ petBreedName }</div>
-                    <CatalogLayoutPetPurchaseView offer={ activeOffer } pageId={ pageParser.pageId } extra={ petPurchaseString } />
-                </div> }
-        </div>
+                                </NitroCardGridItemView>
+                            );
+                        })}
+                    { colorsShowing && (sellableColors.length > 0) && sellableColors.map((colorSet, index) =>
+                        {
+                            return (
+                                <NitroCardGridItemView key={ index } itemActive={ (selectedColorIndex === index) } itemColor={ ColorConverter.int2rgb(colorSet[0]) } onClick={ event => setSelectedColorIndex(index) } />
+                            );
+                        })}
+                </NitroCardGridView>
+            </NitroLayoutGridColumn>
+            <NitroLayoutGridColumn size={ 5 }>
+                { (petIndex === -1) &&
+                    <CatalogPageDetailsView pageParser={ pageParser } /> }
+                { (petIndex >= 0) &&
+                    <>
+                        <NitroLayoutFlexColumn overflow="hidden" position="relative">
+                            { roomPreviewer && <CatalogRoomPreviewerView roomPreviewer={ roomPreviewer } height={ 140 } /> }
+                            { (petIndex > -1 && petIndex <= 7) &&
+                                <NitroLayoutBase className="start-2 bottom-2" position="absolute">
+                                    <button type="button" className= { 'btn btn-primary btn-sm color-button ' + (colorsShowing ? 'active ' : '') } onClick={ event => setColorsShowing(!colorsShowing) }>
+                                        <i className="fas fa-fill-drip" />
+                                    </button>
+                                </NitroLayoutBase> }
+                        </NitroLayoutFlexColumn>
+                        <NitroLayoutFlexColumn className="flex-grow-1" gap={ 2 }>
+                            <NitroLayoutBase className="flex-grow-1 text-black text-truncate">{ petBreedName }</NitroLayoutBase>
+                            <CatalogLayoutPetPurchaseView offer={ activeOffer } pageId={ pageParser.pageId } extra={ petPurchaseString } />
+                        </NitroLayoutFlexColumn>
+                    </> }
+            </NitroLayoutGridColumn>
+        </NitroLayoutGrid>
     );
 }

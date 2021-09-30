@@ -1,21 +1,20 @@
 import { CatalogPageMessageOfferData, IFurnitureData } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useState } from 'react';
 import { GetSessionDataManager, LocalizeText } from '../../../../../../api';
-import { GetCatalogPageImage, GetCatalogPageText, GetOfferName } from '../../../../common/CatalogUtilities';
+import { NitroLayoutGrid, NitroLayoutGridColumn } from '../../../../../../layout';
 import { ProductTypeEnum } from '../../../../common/ProductTypeEnum';
 import { useCatalogContext } from '../../../../context/CatalogContext';
-import { CatalogRoomPreviewerView } from '../../../catalog-room-previewer/CatalogRoomPreviewerView';
 import { CatalogPageOffersView } from '../../offers/CatalogPageOffersView';
-import { CatalogPurchaseView } from '../../purchase/CatalogPurchaseView';
+import { CatalogProductPreviewView } from '../../product-preview/CatalogProductPreviewView';
 import { CatalogLayoutSpacesViewProps } from './CatalogLayoutSpacesView.types';
 
 export const CatalogLayoutSpacesView: FC<CatalogLayoutSpacesViewProps> = props =>
 {
     const { roomPreviewer = null, pageParser = null } = props;
-    const { catalogState } = useCatalogContext();
-    const { activeOffer = null } = catalogState;
     const [ groups, setGroups ] = useState<CatalogPageMessageOfferData[][]>([]);
     const [ activeGroupIndex, setActiveGroupIndex ] = useState(-1);
+    const { catalogState } = useCatalogContext();
+    const { activeOffer = null } = catalogState;
 
     const groupNames = [ 'floors', 'walls', 'views' ];
 
@@ -68,29 +67,19 @@ export const CatalogLayoutSpacesView: FC<CatalogLayoutSpacesViewProps> = props =
     const product = ((activeOffer && activeOffer.products[0]) || null);
 
     return (
-        <div className="row h-100 nitro-catalog-layout-spaces">
-            <div className="d-flex col-7 flex-column h-100 overflow-hidden">
-                <div className="btn-group mx-auto mb-1 w-100">
+        <NitroLayoutGrid>
+            <NitroLayoutGridColumn size={ 7 }>
+                <div className="btn-group w-100">
                     { groupNames.map((name, index) =>
                         {
                             return <button key={ index } type="button" className={ 'btn btn-primary btn-sm ' + ((activeGroupIndex === index) ? 'active ' : '' )} onClick={ event => setActiveGroupIndex(index) }>{ LocalizeText(`catalog.spaces.tab.${ name }`) }</button>
                         })}
                 </div>
                 <CatalogPageOffersView offers={ groups[activeGroupIndex] } />
-            </div>
-            { !product &&
-                <div className="position-relative d-flex flex-column col-5 justify-content-center align-items-center">
-                    <div className="d-block mb-2">
-                        <img alt="" src={ GetCatalogPageImage(pageParser, 1) } />
-                    </div>
-                    <div className="fs-6 text-center text-black lh-sm overflow-hidden">{ GetCatalogPageText(pageParser, 0) }</div>
-                </div> }
-            { product &&
-                <div className="position-relative d-flex flex-column col">
-                    <CatalogRoomPreviewerView roomPreviewer={ roomPreviewer } height={ 140 } />
-                    <div className="fs-6 text-black mt-1 overflow-hidden">{ GetOfferName(activeOffer) }</div>
-                    <CatalogPurchaseView offer={ activeOffer } pageId={ pageParser.pageId } />
-                </div> }
-        </div>
+            </NitroLayoutGridColumn>
+            <NitroLayoutGridColumn size={ 5 }>
+                <CatalogProductPreviewView pageParser={ pageParser } activeOffer={ activeOffer } roomPreviewer={ roomPreviewer } />
+            </NitroLayoutGridColumn>
+        </NitroLayoutGrid>
     );
 }

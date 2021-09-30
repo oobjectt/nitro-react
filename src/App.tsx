@@ -11,9 +11,9 @@ import { MainView } from './views/main/MainView';
 
 export const App: FC<{}> = props =>
 {
-    const [ isReady, setIsReady ]   = useState(false);
-    const [ isError, setIsError ]   = useState(false);
-    const [ message, setMessage ]   = useState('Getting Ready');
+    const [ isReady, setIsReady ] = useState(false);
+    const [ isError, setIsError ] = useState(false);
+    const [ message, setMessage ] = useState('Getting Ready');
 
     //@ts-ignore
     if(!NitroConfig) throw new Error('NitroConfig is not defined!');
@@ -125,7 +125,8 @@ export const App: FC<{}> = props =>
     }
     
     return (
-        <div className="nitro-app">
+        <div className="nitro-app overflow-hidden">
+            <div id="nitro-alerts-container" />
             { (!isReady || isError) && <LoadingView isError={ isError } message={ message } /> }
             <TransitionAnimation type={ TransitionAnimationTypes.FADE_IN } inProp={ (isReady && !isError) } timeout={ 300 }>
                 <MainView />
