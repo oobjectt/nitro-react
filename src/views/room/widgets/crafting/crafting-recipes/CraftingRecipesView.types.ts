@@ -1,6 +1,6 @@
-import { CraftingResultObjectParser } from '@nitrots/nitro-renderer/src/nitro/communication/messages/parser/crafting/CraftingResultObjectParser';
-
+import { CraftingFurnitureItem } from '../utils/CraftingFurnitureItem';
 export interface CraftingRecipesViewProps
 {
-    recipes: CraftingResultObjectParser[]
+    recipes: CraftingFurnitureItem[];
+    onRecipeClick: (recipe: CraftingFurnitureItem) => void;
 }
