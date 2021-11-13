@@ -1,6 +1,6 @@
 import { Dispose, DropBounce, EaseOut, FigureUpdateEvent, JumpBy, Motions, NitroToolbarAnimateIconEvent, Queue, UserInfoDataParser, UserInfoEvent, UserProfileComposer, Wait } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useState } from 'react';
-import { GetRoomSession, GetRoomSessionManager, GetSessionDataManager, GoToDesktop, OpenMessengerChat } from '../../api';
+import { CreateLinkEvent, GetRoomSession, GetRoomSessionManager, GetSessionDataManager, GoToDesktop, OpenMessengerChat } from '../../api';
 import { AvatarEditorEvent, CatalogEvent, FriendsEvent, FriendsMessengerIconEvent, InventoryEvent, NavigatorEvent, RoomWidgetCameraEvent } from '../../events';
 import { AchievementsUIEvent, AchievementsUIUnseenCountEvent } from '../../events/achievements';
 import { UnseenItemTrackerUpdateEvent } from '../../events/inventory/UnseenItemTrackerUpdateEvent';
@@ -29,6 +29,7 @@ export const ToolbarView: FC<ToolbarViewProps> = props =>
     const [ unseenInventoryCount, setUnseenInventoryCount ] = useState(0);
     const [ unseenAchievementCount, setUnseenAchievementCount ] = useState(0);
 
+    const isMod = GetSessionDataManager().isModerator;
     const unseenFriendListCount = 0;
 
     const onUserInfoEvent = useCallback((event: UserInfoEvent) =>
@@ -182,7 +183,7 @@ export const ToolbarView: FC<ToolbarViewProps> = props =>
                                 <i className="icon icon-habbo"></i>
                             </div>) }
                         { !isInRoom && (
-                            <div className="navigation-item">
+                            <div className="navigation-item" onClick={ event => CreateLinkEvent('navigator/goto/home') }>
                                 <i className="icon icon-house"></i>
                             </div>) }
                         <div className="navigation-item" onClick={ event => handleToolbarItemClick(ToolbarViewItems.NAVIGATOR_ITEM) }>
@@ -200,9 +201,10 @@ export const ToolbarView: FC<ToolbarViewProps> = props =>
                             <div className="navigation-item" onClick={ event => handleToolbarItemClick(ToolbarViewItems.CAMERA_ITEM) }>
                                 <i className="icon icon-camera"></i>
                             </div>) }
-                        <div className="navigation-item" onClick={ event => handleToolbarItemClick(ToolbarViewItems.MOD_TOOLS_ITEM) }>
+                        { isMod && (
+                            <div className="navigation-item" onClick={ event => handleToolbarItemClick(ToolbarViewItems.MOD_TOOLS_ITEM) }>
                             <i className="icon icon-modtools"></i>
-                        </div>
+                        </div>) }
                     </div>
                     <div id="toolbar-chat-input-container" className="d-flex align-items-center" />
                 </div>
@@ -221,7 +223,7 @@ export const ToolbarView: FC<ToolbarViewProps> = props =>
                                     <div className="position-absolute bg-danger px-1 py-0 rounded shadow count">{ unseenFriendListCount }</div> }
                             </div> }
                     </div>
-                    <div id="toolbar-friend-bar-container" />
+                    <div id="toolbar-friend-bar-container" className="d-none d-lg-block" />
                 </div>
             </div>
         </div>
