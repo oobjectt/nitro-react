@@ -9,6 +9,7 @@ import { FurnitureExternalImageView } from './external-image/FurnitureExternalIm
 import { FurnitureFriendFurniView } from './friend-furni/FurnitureFriendFurniView';
 import { FurnitureGiftOpeningView } from './gift-opening/FurnitureGiftOpeningView';
 import { FurnitureHighScoreView } from './high-score/FurnitureHighScoreView';
+import { FurnitureJukeboxView } from './jukebox/FurnitureJukeboxView';
 import { FurnitureManipulationMenuView } from './manipulation-menu/FurnitureManipulationMenuView';
 import { FurnitureMannequinView } from './mannequin/FurnitureMannequinView';
 import { FurnitureStickieView } from './stickie/FurnitureStickieView';
@@ -34,6 +35,7 @@ export const FurnitureWidgetsView: FC<{}> = props =>
             <FurnitureBadgeDisplayView />
             <FurnitureExternalImageView />
             <FurnitureYoutubeDisplayView />
+            <FurnitureJukeboxView />
         </div>
     );
 }

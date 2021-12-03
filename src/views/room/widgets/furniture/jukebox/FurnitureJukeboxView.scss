@@ -1,0 +1,28 @@
+.jukebox-widget {
+    width: 600px;
+    height: 440px;
+
+    .mymusic {
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        z-index: 0;
+    }
+
+    .playlistImg {
+        position: absolute;
+        top: 0;
+        z-index: 0;
+    }
+
+    .getmore {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 0;
+    }
+
+    .playlistBottom {
+        z-index: 3;
+    }
+}
