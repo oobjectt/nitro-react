@@ -2,6 +2,7 @@ import { EventDispatcher, NitroRectangle, RoomGeometry, RoomVariableEnum, Vector
 import { FC, useEffect, useRef, useState } from 'react';
 import { DispatchMouseEvent, DispatchTouchEvent, DoorbellWidgetHandler, FriendRequestHandler, FurniChooserWidgetHandler, FurnitureContextMenuWidgetHandler, FurnitureCreditWidgetHandler, FurnitureCustomStackHeightWidgetHandler, FurnitureDimmerWidgetHandler, FurnitureExternalImageWidgetHandler, FurnitureMannequinWidgetHandler, FurniturePresentWidgetHandler, GetNitroInstance, GetRoomEngine, InitializeRoomInstanceRenderingCanvas, IRoomWidgetHandlerManager, RoomWidgetAvatarInfoHandler, RoomWidgetChatHandler, RoomWidgetChatInputHandler, RoomWidgetHandlerManager, RoomWidgetInfostandHandler, RoomWidgetRoomToolsHandler, RoomWidgetUpdateRoomViewEvent, UserChooserWidgetHandler } from '../../api';
 import { FurnitureYoutubeDisplayWidgetHandler } from '../../api/nitro/room/widgets/handlers/FurnitureYoutubeDisplayWidgetHandler';
+import { PlayListEditorWidgetHandler } from '../../api/nitro/room/widgets/handlers/PlayListEditorWidgetHandler';
 import { PollWidgetHandler } from '../../api/nitro/room/widgets/handlers/PollWidgetHandler';
 import { WordQuizWidgetHandler } from '../../api/nitro/room/widgets/handlers/WordQuizWidgetHandler';
 import { RoomContextProvider } from './context/RoomContext';
@@ -52,6 +53,7 @@ export const RoomView: FC<RoomViewProps> = props =>
         widgetHandlerManager.registerHandler(new FurnitureDimmerWidgetHandler());
         widgetHandlerManager.registerHandler(new FurnitureYoutubeDisplayWidgetHandler());
         widgetHandlerManager.registerHandler(new FurnitureMannequinWidgetHandler());
+        widgetHandlerManager.registerHandler(new PlayListEditorWidgetHandler());
 
         setWidgetHandler(widgetHandlerManager);
 
