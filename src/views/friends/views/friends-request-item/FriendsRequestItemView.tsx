@@ -1,37 +1,24 @@
-import { AcceptFriendMessageComposer, DeclineFriendMessageComposer } from '@nitrots/nitro-renderer';
-import { FC, useCallback } from 'react';
-import { SendMessageHook } from '../../../../hooks/messages/message-event';
-import { UserProfileIconView } from '../../../shared/user-profile-icon/UserProfileIconView';
+import { FC } from 'react';
+import { NitroCardAccordionItemView, NitroLayoutFlex, UserProfileIconView } from '../../../../layout';
+import { NitroLayoutBase } from '../../../../layout/base';
+import { useFriendsContext } from '../../context/FriendsContext';
 import { FriendsRequestItemViewProps } from './FriendsRequestItemView.types';
 
 export const FriendsRequestItemView: FC<FriendsRequestItemViewProps> = props =>
 {
     const { request = null } = props;
-
-    const accept = useCallback(() =>
-    {
-        if(!request) return;
-        
-        SendMessageHook(new AcceptFriendMessageComposer(request.id));
-    }, [ request ]);
-
-    const decline = useCallback(() =>
-    {
-        if(!request) return;
-        
-        SendMessageHook(new DeclineFriendMessageComposer(false, request.id));
-    }, [ request ]);
+    const { acceptFriend = null, declineFriend = null } = useFriendsContext();
 
     if(!request) return null;
 
     return (
-        <div className="px-2 py-1 d-flex gap-1 align-items-center">
+        <NitroCardAccordionItemView>
             <UserProfileIconView userId={ request.id } />
-            <div>{ request.name }</div>
-            <div className="ms-auto d-flex align-items-center gap-1">
-               <i className="icon icon-accept cursor-pointer" onClick={ accept } />
-               <i className="icon icon-deny cursor-pointer" onClick={ decline } />
-            </div>
-        </div>
+            <NitroLayoutBase>{ request.name }</NitroLayoutBase>
+            <NitroLayoutFlex className="ms-auto align-items-center" gap={ 1 }>
+               <NitroLayoutBase className="nitro-friends-spritesheet icon-accept cursor-pointer" onClick={ event => acceptFriend(request.requesterUserId) } />
+               <NitroLayoutBase className="nitro-friends-spritesheet icon-deny cursor-pointer" onClick={ event => declineFriend(request.requesterUserId) } />
+            </NitroLayoutFlex>
+        </NitroCardAccordionItemView>
     );
 };

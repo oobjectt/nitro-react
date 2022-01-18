@@ -1,4 +1,4 @@
-import { CatalogPageMessageOfferData, CatalogPageMessageParser, ClubOfferData, GiftWrappingConfigurationParser, INodeData } from '@nitrots/nitro-renderer';
+import { CatalogPageMessageOfferData, CatalogPageMessageParser, ClubGiftInfoParser, ClubOfferData, GiftWrappingConfigurationParser, INodeData, MarketplaceConfigurationMessageParser } from '@nitrots/nitro-renderer';
 import { HabboGroupEntryData } from '@nitrots/nitro-renderer/src/nitro/communication/messages/parser/user/HabboGroupEntryData';
 import { Reducer } from 'react';
 import { CatalogPetPalette } from '../common/CatalogPetPalette';
@@ -17,8 +17,10 @@ export interface ICatalogState
     groups: HabboGroupEntryData[];
     petPalettes: CatalogPetPalette[];
     clubOffers: ClubOfferData[];
+    clubGifts: ClubGiftInfoParser;
     subscriptionInfo: SubscriptionInfo;
     giftConfiguration: GiftWrappingConfiguration;
+    marketplaceConfiguration: MarketplaceConfigurationMessageParser;
 }
 
 export interface ICatalogAction
@@ -34,8 +36,10 @@ export interface ICatalogAction
         groups?: HabboGroupEntryData[];
         petPalette?: CatalogPetPalette;
         clubOffers?: ClubOfferData[];
+        clubGifts?: ClubGiftInfoParser;
         subscriptionInfo?: SubscriptionInfo;
         giftConfiguration?: GiftWrappingConfigurationParser;
+        marketplaceConfiguration?: MarketplaceConfigurationMessageParser;
     }
 }
 
@@ -52,6 +56,8 @@ export class CatalogActions
     public static SET_SEARCH_RESULT: string = 'CA_SET_SEARCH_RESULT';
     public static SET_SUBSCRIPTION_INFO: string = 'CA_SET_SUBSCRIPTION_INFO';
     public static SET_GIFT_CONFIGURATION: string = 'CA_SET_GIFT_CONFIGURATION';
+    public static SET_CLUB_GIFTS: string = 'CA_SET_CLUB_GIFTS';
+    public static SET_MARKETPLACE_CONFIGURATION: string = 'CA_SET_MARKETPLACE_CONFIGURATION';
 }
 
 export const initialCatalog: ICatalogState = {
@@ -64,8 +70,10 @@ export const initialCatalog: ICatalogState = {
     groups: [],
     petPalettes: [],
     clubOffers: null,
+    clubGifts: null,
     subscriptionInfo: new SubscriptionInfo(),
-    giftConfiguration: null
+    giftConfiguration: null,
+    marketplaceConfiguration: null
 }
 
 export const CatalogReducer: Reducer<ICatalogState, ICatalogAction> = (state, action) =>
@@ -159,6 +167,16 @@ export const CatalogReducer: Reducer<ICatalogState, ICatalogAction> = (state, ac
             const giftConfiguration = new GiftWrappingConfiguration((action.payload.giftConfiguration || null));
 
             return { ...state, giftConfiguration };
+        }
+        case CatalogActions.SET_CLUB_GIFTS: {
+            const clubGifts = (action.payload.clubGifts || state.clubGifts || null);
+
+            return { ...state, clubGifts };
+        }
+        case CatalogActions.SET_MARKETPLACE_CONFIGURATION: {
+            const marketplaceConfiguration = (action.payload.marketplaceConfiguration || state.marketplaceConfiguration || null);
+
+            return { ...state, marketplaceConfiguration }
         }
         default:
             return state;

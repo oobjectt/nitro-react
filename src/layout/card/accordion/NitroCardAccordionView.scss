@@ -1,1 +1,6 @@
-@import './item/NitroCardAccordionItemView';
+.nitro-card-accordion {
+    display: flex;
+    height: 100%;
+}
+
+@import "./set/NitroCardAccordionSetView";

@@ -126,11 +126,11 @@ export const App: FC<{}> = props =>
     
     return (
         <div className="nitro-app overflow-hidden">
-            <div id="nitro-alerts-container" />
             { (!isReady || isError) && <LoadingView isError={ isError } message={ message } /> }
             <TransitionAnimation type={ TransitionAnimationTypes.FADE_IN } inProp={ (isReady && !isError) }>
                 <MainView />
             </TransitionAnimation>
+            <div id="draggable-windows-container" />
         </div>
     );
 }

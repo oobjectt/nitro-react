@@ -6,6 +6,8 @@ import { CatalogLayouGuildCustomFurniView } from './guild-custom-furni/CatalogLa
 import { CatalogLayouGuildForumView } from './guild-forum/CatalogLayoutGuildForumView';
 import { CatalogLayouGuildFrontpageView } from './guild-frontpage/CatalogLayoutGuildFrontpageView';
 import { CatalogLayoutInfoLoyaltyView } from './info-loyalty/CatalogLayoutInfoLoyaltyView';
+import { CatalogLayoutMarketplaceOwnItemsView } from './marketplace/own-items/CatalogLayoutMarketplaceOwnItemsView';
+import { CatalogLayoutMarketplacePublicItemsView } from './marketplace/public-items/CatalogLayoutMarketplacePublicItemsView';
 import { CatalogLayoutPetView } from './pets/CatalogLayoutPetView';
 import { CatalogLayoutPets2View } from './pets2/CatalogLayoutPets2View';
 import { CatalogLayoutPets3View } from './pets3/CatalogLayoutPets3View';
@@ -13,6 +15,7 @@ import { CatalogLayoutSingleBundleView } from './single-bundle/CatalogLayoutSing
 import { CatalogLayoutSpacesView } from './spaces-new/CatalogLayoutSpacesView';
 import { CatalogLayoutTrophiesView } from './trophies/CatalogLayoutTrophiesView';
 import { CatalogLayoutVipBuyView } from './vip-buy/CatalogLayoutVipBuyView';
+import { CatalogLayoutVipGiftsView } from './vip-gifts/CatalogLayoutVipGiftsView';
 
 export const GetCatalogLayout = (pageParser: CatalogPageMessageParser, roomPreviewer: RoomPreviewer) =>
 {
@@ -39,11 +42,11 @@ export const GetCatalogLayout = (pageParser: CatalogPageMessageParser, roomPrevi
         case 'search_results':
             return null;
         case 'club_gifts':
-            return null;
+            return <CatalogLayoutVipGiftsView roomPreviewer={ roomPreviewer } pageParser={ pageParser } />;
         case 'marketplace_own_items':
-            return null;
+            return <CatalogLayoutMarketplaceOwnItemsView roomPreviewer={ roomPreviewer } pageParser={ pageParser } />;
         case 'marketplace':
-            return null;
+            return <CatalogLayoutMarketplacePublicItemsView roomPreviewer={ roomPreviewer } pageParser={ pageParser } />;
         case 'single_bundle':
             return <CatalogLayoutSingleBundleView roomPreviewer={ roomPreviewer } pageParser={ pageParser } />;
         case 'spaces_new':
@@ -54,6 +57,8 @@ export const GetCatalogLayout = (pageParser: CatalogPageMessageParser, roomPrevi
             return <CatalogLayoutInfoLoyaltyView roomPreviewer={ roomPreviewer } pageParser={ pageParser } />;
         case 'badge_display':
             return <CatalogLayoutBadgeDisplayView roomPreviewer={roomPreviewer} pageParser={ pageParser } />;
+        //case 'default_3x3_color_grouping':
+            //return <CatalogLayoutColorGroupingView roomPreviewer={roomPreviewer} pageParser={ pageParser } />;
         case 'bots':
         case 'default_3x3':
         default:
