@@ -1,10 +1,17 @@
-import { Dispatch, ProviderProps } from 'react';
-import { IFriendsAction, IFriendsState } from '../reducers/FriendsReducer';
+import { ProviderProps } from 'react';
+import { MessengerFriend } from '../common/MessengerFriend';
+import { MessengerRequest } from '../common/MessengerRequest';
+import { MessengerSettings } from '../common/MessengerSettings';
 
 export interface IFriendsContext
 {
-    friendsState: IFriendsState;
-    dispatchFriendsState: Dispatch<IFriendsAction>;
+    friends: MessengerFriend[];
+    requests: MessengerRequest[];
+    settings: MessengerSettings;
+    canRequestFriend: (userId: number) => boolean;
+    requestFriend: (userId: number, userName: string) => void;
+    acceptFriend: (userId: number) => void;
+    declineFriend: (userId: number, declineAll?: boolean) => void;
 }
 
 export interface FriendsContextProps extends ProviderProps<IFriendsContext>

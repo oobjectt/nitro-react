@@ -1,7 +1,8 @@
-import { RoomEngineEvent, RoomEngineObjectEvent, RoomEngineRoomAdEvent, RoomEngineTriggerWidgetEvent, RoomEngineUseProductEvent, RoomId, RoomObjectCategory, RoomObjectOperationType, RoomObjectVariable, RoomSessionChatEvent, RoomSessionDanceEvent, RoomSessionDimmerPresetsEvent, RoomSessionDoorbellEvent, RoomSessionErrorMessageEvent, RoomSessionEvent, RoomSessionFriendRequestEvent, RoomSessionPetInfoUpdateEvent, RoomSessionPresentEvent, RoomSessionUserBadgesEvent, RoomZoomEvent } from '@nitrots/nitro-renderer';
+import { RoomEngineEvent, RoomEngineObjectEvent, RoomEngineRoomAdEvent, RoomEngineTriggerWidgetEvent, RoomEngineUseProductEvent, RoomId, RoomObjectCategory, RoomObjectOperationType, RoomObjectVariable, RoomSessionChatEvent, RoomSessionDanceEvent, RoomSessionDimmerPresetsEvent, RoomSessionDoorbellEvent, RoomSessionErrorMessageEvent, RoomSessionEvent, RoomSessionFriendRequestEvent, RoomSessionPetInfoUpdateEvent, RoomSessionPollEvent, RoomSessionPresentEvent, RoomSessionUserBadgesEvent, RoomSessionWordQuizEvent, RoomZoomEvent } from '@nitrots/nitro-renderer';
 import { FC, useCallback } from 'react';
 import { CanManipulateFurniture, GetRoomEngine, GetSessionDataManager, IsFurnitureSelectionDisabled, LocalizeText, ProcessRoomObjectOperation, RoomWidgetFurniToWidgetMessage, RoomWidgetUpdateRoomEngineEvent, RoomWidgetUpdateRoomObjectEvent } from '../../../api';
-import { useRoomEngineEvent, useRoomSessionManagerEvent } from '../../../hooks/events';
+import { FriendRequestEvent } from '../../../events';
+import { useRoomEngineEvent, useRoomSessionManagerEvent, useUiEvent } from '../../../hooks';
 import { NotificationAlertType } from '../../notification-center/common/NotificationAlertType';
 import { NotificationUtilities } from '../../notification-center/common/NotificationUtilities';
 import { useRoomContext } from '../context/RoomContext';
@@ -12,12 +13,14 @@ import { FurniChooserWidgetView } from './choosers/FurniChooserWidgetView';
 import { UserChooserWidgetView } from './choosers/UserChooserWidgetView';
 import { CraftingWidgetView } from './crafting/CraftingWidgetView';
 import { DoorbellWidgetView } from './doorbell/DoorbellWidgetView';
+import { FriendRequestWidgetView } from './friend-request/FriendRequestWidgetView';
 import { FurnitureWidgetsView } from './furniture/FurnitureWidgetsView';
 import { InfoStandWidgetView } from './infostand/InfoStandWidgetView';
 import { RoomThumbnailWidgetView } from './room-thumbnail/RoomThumbnailWidgetView';
 import { RoomToolsWidgetView } from './room-tools/RoomToolsWidgetView';
-import { RoomWidgetViewProps } from './RoomWidgets.types';
-export const RoomWidgetsView: FC<RoomWidgetViewProps> = props =>
+import { WordQuizWidgetView } from './word-quiz/WordQuizWidgetView';
+
+export const RoomWidgetsView: FC<{}> = props =>
 {
     const { roomSession = null, eventDispatcher = null, widgetHandler = null } = useRoomContext();
 
@@ -269,6 +272,14 @@ export const RoomWidgetsView: FC<RoomWidgetViewProps> = props =>
     useRoomSessionManagerEvent(RoomSessionFriendRequestEvent.RSFRE_FRIEND_REQUEST, onRoomSessionEvent);
     useRoomSessionManagerEvent(RoomSessionPresentEvent.RSPE_PRESENT_OPENED, onRoomSessionEvent);
     useRoomSessionManagerEvent(RoomSessionPetInfoUpdateEvent.PET_INFO, onRoomSessionEvent);
+    useRoomSessionManagerEvent(RoomSessionWordQuizEvent.ANSWERED, onRoomSessionEvent);
+    useRoomSessionManagerEvent(RoomSessionWordQuizEvent.FINISHED, onRoomSessionEvent);
+    useRoomSessionManagerEvent(RoomSessionWordQuizEvent.QUESTION, onRoomSessionEvent);
+    useRoomSessionManagerEvent(RoomSessionPollEvent.OFFER, onRoomSessionEvent);
+    useRoomSessionManagerEvent(RoomSessionPollEvent.ERROR, onRoomSessionEvent);
+    useRoomSessionManagerEvent(RoomSessionPollEvent.CONTENT, onRoomSessionEvent);
+    useUiEvent(FriendRequestEvent.ACCEPTED, onRoomSessionEvent);
+    useUiEvent(FriendRequestEvent.DECLINED, onRoomSessionEvent);
 
     const onRoomSessionErrorMessageEvent = useCallback((event: RoomSessionErrorMessageEvent) =>
     {
@@ -351,6 +362,8 @@ export const RoomWidgetsView: FC<RoomWidgetViewProps> = props =>
             <FurniChooserWidgetView />
             <UserChooserWidgetView />
             <CraftingWidgetView />
+            <WordQuizWidgetView />
+            <FriendRequestWidgetView />
         </>
     );
 }

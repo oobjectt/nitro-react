@@ -1,7 +1,6 @@
-import { RelationshipStatusEnum, RelationshipStatusInfo, UserProfileComposer } from '@nitrots/nitro-renderer';
+import { RelationshipStatusEnum, RelationshipStatusInfo } from '@nitrots/nitro-renderer';
 import { FC, useCallback } from 'react';
-import { LocalizeText } from '../../../../api';
-import { SendMessageHook } from '../../../../hooks';
+import { GetUserProfile, LocalizeText } from '../../../../api';
 import { AvatarImageView } from '../../../shared/avatar-image/AvatarImageView';
 import { RelationshipsContainerViewProps } from './RelationshipsContainerView.types';
 
@@ -11,8 +10,9 @@ export const RelationshipsContainerView: FC<RelationshipsContainerViewProps> = p
 
     const OnUserClick = useCallback((user: RelationshipStatusInfo) =>
     {
-        if(user)
-            SendMessageHook(new UserProfileComposer(user.randomFriendId));
+        if(!user) return;
+
+        GetUserProfile(user.randomFriendId);
     }, []);
 
     const RelationshipComponent = useCallback(({ type }) =>
@@ -25,10 +25,10 @@ export const RelationshipsContainerView: FC<RelationshipsContainerViewProps> = p
 
         return (
             <div className="relationship-container d-flex flex-row align-items-center w-100">
-                <i className={`icon icon-relationship-${relationshipName} flex-shrink-0 align-self-baseline mt-2`} />
+                <i className={`nitro-friends-spritesheet icon-${relationshipName} flex-shrink-0 align-self-baseline mt-2`} />
                 <div className="w-100 d-flex flex-column">
-                    <span className={'relationship w-100' + (!simple ? ' advanced' : '')}>
-                        <span className="cursor-pointer relationship-text" onClick={() => OnUserClick(relationshipInfo)}>
+                    <span className={'relationship mx-2' + (!simple ? ' advanced' : '')}>
+                        <span className="cursor-pointer relationship-text" onClick={ event => OnUserClick(relationshipInfo)}>
                             {
                                 (relationshipInfo && relationshipInfo.friendCount > 0) ? relationshipInfo.randomFriendName : LocalizeText('extendedprofile.add.friends')
                             }
