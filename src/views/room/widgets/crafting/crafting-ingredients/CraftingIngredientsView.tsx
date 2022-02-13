@@ -14,8 +14,8 @@ export const CraftingIngredientsView: FC<CraftingIngredientsViewProps> = props =
     }, []);
 
     return (
-        <NitroLayoutFlexColumn className="h-100" gap={ 1 } overflow="hidden">
-            <NitroLayoutBase className="flex-shrink-0 bg-muted text-center rounded fw-bold text-black text-truncate">{ LocalizeText('crafting.title.mixer') }</NitroLayoutBase>
+        <NitroLayoutFlexColumn className="h-100 bg-test p-2 rounded" gap={ 1 } overflow="hidden">
+            <NitroLayoutBase className="bg-muted text-center rounded p-1 text-truncate">{ LocalizeText('crafting.title.mixer') }</NitroLayoutBase>
             <NitroCardGridView>
                 { ingredients && (ingredients.length > 0) && ingredients.map((ingredient, index) =>
                     {

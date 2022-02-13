@@ -1,4 +1,12 @@
 .nitro-crafting-widget {
     width: $nitro-crafting-widget-width;
-    height: $nitro-crafting-widget-width;
+    height: $nitro-crafting-widget-height;
+
+    .crafting-item-icon-preview {
+        width: 60px;
+        height: 60px;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
 }
