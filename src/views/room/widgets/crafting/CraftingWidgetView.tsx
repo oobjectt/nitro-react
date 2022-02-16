@@ -1,8 +1,6 @@
-import { CraftableProductsEvent } from '@nitrots/nitro-renderer/src/nitro/communication/messages/incoming/crafting/CraftableProductsEvent';
-import { GetCraftableProductsComposer } from '@nitrots/nitro-renderer/src/nitro/communication/messages/outgoing/crafting/GetCraftableProductsComposer';
-import { GetCraftingRecipeComposer } from '@nitrots/nitro-renderer/src/nitro/communication/messages/outgoing/crafting/GetCraftingRecipeComposer';
+import { CraftableProductsEvent, CraftingRecipeEvent, GetCraftableProductsComposer, GetCraftingRecipeComposer } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useState } from 'react';
-import { GetSessionDataManager } from '../../../../api';
+import { GetSessionDataManager, LocalizeText } from '../../../../api';
 import { RoomWidgetCraftingEvent } from '../../../../api/nitro/room/widgets/events/RoomWidgetCraftingEvent';
 import { BatchUpdates, CreateEventDispatcherHook, CreateMessageHook, SendMessageHook } from '../../../../hooks';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardView, NitroLayoutGrid, NitroLayoutGridColumn } from '../../../../layout';
@@ -12,7 +10,6 @@ import { ActiveCraftingIngredientsView } from './active-crafting-ingredients/Act
 import { CraftingIngredientsView } from './crafting-ingredients/CraftingIngredientsView';
 import { CraftingRecipesView } from './crafting-recipes/CraftingRecipesView';
 import { CraftingFurnitureItem } from './utils/CraftingFurnitureItem';
-
 const MODE_NONE = 0;
 const MODE_SECRET_RECIPE = 1;
 const MODE_PUBLIC_RECIPE = 2;
@@ -22,6 +19,7 @@ export const CraftingWidgetView: FC<{}> = props =>
     const [ objectId, setObjectId ] = useState(-1);
     const [ recipes, setRecipes ] = useState<CraftingFurnitureItem[]>(null);
     const [ ingredients, setIngredients ] = useState<CraftingFurnitureItem[]>(null);
+    const [ activeIngredients, setActiveIngredients ] = useState<CraftingFurnitureItem[]>([]);
     const [ craftingMode, setCraftingMode ] = useState(MODE_NONE);
     const [ selectedProduct, setSelectedProduct ] = useState<CraftingFurnitureItem>(null);
     const { eventDispatcher = null } = useRoomContext();
@@ -81,30 +79,65 @@ export const CraftingWidgetView: FC<{}> = props =>
         });
     }, []);
 
+    const onCraftingRecipeEvent = useCallback( (event: CraftingRecipeEvent) =>
+    {
+        const parser = event.getParser();
+
+        if(!parser) return;
+
+        const itemIds: number[] = [];
+        parser.ingredients.forEach(ingredient =>
+            {
+                //todo: this
+                const item = ingredients.find( ingr => ingr.productCode === ingredient.itemName)
+                if(item)
+                {
+                    for(let i = 0; i < ingredient.count; i++)
+                    {
+                        const itemId = item.getItemToMixer();
+                        if(itemId > 0) itemIds.push(itemId);
+                    }
+                }
+            });
+    }, [ingredients]);
+
     CreateMessageHook(CraftableProductsEvent, onCraftableProductsEvent);
+    CreateMessageHook(CraftingRecipeEvent, onCraftingRecipeEvent);
 
     const selectRecipe = useCallback( (recipe: CraftingFurnitureItem) =>
     {
         setSelectedProduct(recipe);
         setCraftingMode(MODE_PUBLIC_RECIPE);
-        SendMessageHook(new GetCraftableProductsComposer(recipe.productCode))
+        SendMessageHook(new GetCraftingRecipeComposer(recipe.productCode))
     }, []);
+
+    const onIngredientClick = useCallback( (ingredient: CraftingFurnitureItem) =>
+    {
+        if(craftingMode === MODE_PUBLIC_RECIPE) return;
+
+        if(craftingMode === MODE_NONE)
+        {
+            setCraftingMode(MODE_SECRET_RECIPE);
+        }
+
+        activeIngredients.push(ingredient);
+    }, [activeIngredients, craftingMode]);
 
     useEffect( () =>
     {
-        if(objectId !== -1) SendMessageHook(new GetCraftingRecipeComposer(objectId));
+        if(objectId !== -1) SendMessageHook(new GetCraftableProductsComposer(objectId));
     }, [objectId]);
 
     if(objectId === -1) return null;
     
     return (
         <NitroCardView className="nitro-crafting-widget">
-            <NitroCardHeaderView headerText="Crafting" onCloseClick={ onClose } />
+            <NitroCardHeaderView headerText={LocalizeText('crafting.title')} onCloseClick={ onClose } />
             <NitroCardContentView>
                 <NitroLayoutGrid>
                     <NitroLayoutGridColumn size={ 6 } overflow="auto">
                         <CraftingRecipesView recipes={ recipes } onRecipeClick={selectRecipe}/>
-                        <CraftingIngredientsView ingredients={ ingredients } />
+                        <CraftingIngredientsView ingredients={ ingredients } onIngredientClick={onIngredientClick} />
                     </NitroLayoutGridColumn>
                     <NitroLayoutGridColumn size={ 6 }>
                         <ActiveCraftingIngredientsView ingredients={ ingredients }/>
