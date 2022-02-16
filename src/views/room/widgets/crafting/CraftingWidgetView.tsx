@@ -7,6 +7,7 @@ import { NitroCardContentView, NitroCardHeaderView, NitroCardView, NitroLayoutGr
 import { GetInventoryGroupItems } from '../../../inventory/common/InventoryGroupItems';
 import { useRoomContext } from '../../context/RoomContext';
 import { ActiveCraftingIngredientsView } from './active-crafting-ingredients/ActiveCraftingIngredientsView';
+import { CraftingActiveRecipeView } from './active-recipe/CraftingActiveRecipeView';
 import { CraftingIngredientsView } from './crafting-ingredients/CraftingIngredientsView';
 import { CraftingRecipesView } from './crafting-recipes/CraftingRecipesView';
 import { CraftingFurnitureItem } from './utils/CraftingFurnitureItem';
@@ -106,6 +107,7 @@ export const CraftingWidgetView: FC<{}> = props =>
 
     const selectRecipe = useCallback( (recipe: CraftingFurnitureItem) =>
     {
+        console.log(recipe)
         setSelectedProduct(recipe);
         setCraftingMode(MODE_PUBLIC_RECIPE);
         SendMessageHook(new GetCraftingRecipeComposer(recipe.productCode))
@@ -131,16 +133,17 @@ export const CraftingWidgetView: FC<{}> = props =>
     if(objectId === -1) return null;
     
     return (
-        <NitroCardView className="nitro-crafting-widget">
-            <NitroCardHeaderView headerText={LocalizeText('crafting.title')} onCloseClick={ onClose } />
-            <NitroCardContentView>
+        <NitroCardView className="nitro-crafting-widget" simple={ true }>
+            <NitroCardHeaderView headerText={ LocalizeText('crafting.title') } onCloseClick={ onClose } />
+            <NitroCardContentView className="p-0 bg-muted">
                 <NitroLayoutGrid>
-                    <NitroLayoutGridColumn size={ 6 } overflow="auto">
-                        <CraftingRecipesView recipes={ recipes } onRecipeClick={selectRecipe}/>
+                    <NitroLayoutGridColumn className="p-2" size={ 6 } overflow="auto">
+                        <CraftingRecipesView recipes={ recipes } onRecipeClick={ selectRecipe }/>
                         <CraftingIngredientsView ingredients={ ingredients } onIngredientClick={onIngredientClick} />
                     </NitroLayoutGridColumn>
-                    <NitroLayoutGridColumn size={ 6 }>
+                    <NitroLayoutGridColumn className="p-2" size={ 6 }>
                         <ActiveCraftingIngredientsView ingredients={ ingredients }/>
+                        <CraftingActiveRecipeView activeRecipe={  selectedProduct } />
                     </NitroLayoutGridColumn>
                 </NitroLayoutGrid>
             </NitroCardContentView>

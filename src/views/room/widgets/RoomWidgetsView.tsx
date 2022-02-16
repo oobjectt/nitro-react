@@ -1,7 +1,7 @@
 import { RoomEngineEvent, RoomEngineObjectEvent, RoomEngineRoomAdEvent, RoomEngineTriggerWidgetEvent, RoomEngineUseProductEvent, RoomId, RoomObjectCategory, RoomObjectOperationType, RoomObjectVariable, RoomSessionChatEvent, RoomSessionDanceEvent, RoomSessionDimmerPresetsEvent, RoomSessionDoorbellEvent, RoomSessionErrorMessageEvent, RoomSessionEvent, RoomSessionFriendRequestEvent, RoomSessionPetInfoUpdateEvent, RoomSessionPollEvent, RoomSessionPresentEvent, RoomSessionUserBadgesEvent, RoomSessionWordQuizEvent, RoomZoomEvent } from '@nitrots/nitro-renderer';
 import { FC, useCallback } from 'react';
 import { CanManipulateFurniture, GetRoomEngine, GetSessionDataManager, IsFurnitureSelectionDisabled, LocalizeText, ProcessRoomObjectOperation, RoomWidgetFurniToWidgetMessage, RoomWidgetUpdateRoomEngineEvent, RoomWidgetUpdateRoomObjectEvent } from '../../../api';
-import { FriendRequestEvent } from '../../../events';
+import { FriendRequestEvent } from '../../../events/friends/FriendRequestEvent';
 import { useRoomEngineEvent, useRoomSessionManagerEvent, useUiEvent } from '../../../hooks';
 import { NotificationAlertType } from '../../notification-center/common/NotificationAlertType';
 import { NotificationUtilities } from '../../notification-center/common/NotificationUtilities';
