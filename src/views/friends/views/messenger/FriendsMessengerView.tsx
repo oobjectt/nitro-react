@@ -1,4 +1,4 @@
-import { FollowFriendMessageComposer, ILinkEventTracker, NewConsoleMessageEvent, SendMessageComposer } from '@nitrots/nitro-renderer';
+import { FollowFriendMessageComposer, ILinkEventTracker, NewConsoleMessageEvent, RoomInviteEvent, SendMessageComposer } from '@nitrots/nitro-renderer';
 import { FC, KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AddEventLinkTracker, GetSessionDataManager, GetUserProfile, LocalizeText, RemoveLinkEventTracker } from '../../../../api';
 import { MESSENGER_MESSAGE_RECEIVED, MESSENGER_NEW_THREAD, PlaySound } from '../../../../api/utils/PlaySound';
@@ -104,6 +104,21 @@ export const FriendsMessengerView: FC<{}> = props =>
     }, [getMessageThreadWithIndex]);
 
     CreateMessageHook(NewConsoleMessageEvent, onNewConsoleMessageEvent);
+
+    const onRoomInviteEvent = useCallback((event: RoomInviteEvent) =>
+    {
+        const parser = event.getParser();
+
+        const [threadIndex, thread] = getMessageThreadWithIndex(parser.senderId);
+
+        if((threadIndex === -1) || !thread) return;
+
+        thread.addMessage(parser.senderId, parser.messageText, 0, null, MessengerThreadChat.ROOM_INVITE);
+
+        setMessageThreads(prevValue => [...prevValue]);
+    }, [getMessageThreadWithIndex]);
+
+    CreateMessageHook(RoomInviteEvent, onRoomInviteEvent);
 
     const sendMessage = useCallback(() =>
     {
@@ -292,7 +307,7 @@ export const FriendsMessengerView: FC<{}> = props =>
                                     <FriendsMessengerThreadView thread={messageThreads[activeThreadIndex]} />
                                 </NitroLayoutFlexColumn>
                                 <NitroLayoutFlex gap={2}>
-                                    <input type="text" className="form-control form-control-sm" placeholder={LocalizeText('messenger.window.input.default', ['FRIEND_NAME'], [messageThreads[activeThreadIndex].participant.name])} value={messageText} onChange={event => setMessageText(event.target.value)} onKeyDown={onKeyDown} />
+                                    <input type="text" className="form-control form-control-sm" maxLength={ 255 } placeholder={LocalizeText('messenger.window.input.default', ['FRIEND_NAME'], [messageThreads[activeThreadIndex].participant.name])} value={messageText} onChange={event => setMessageText(event.target.value)} onKeyDown={onKeyDown} />
                                     <NitroLayoutButton variant="success" size="sm" onClick={sendMessage}>
                                         {LocalizeText('widgets.chatinput.say')}
                                     </NitroLayoutButton>
