@@ -1,40 +1,58 @@
-import { GroupBadgePartsComposer, GroupPurchasedEvent, GroupSettingsComposer, ILinkEventTracker } from '@nitrots/nitro-renderer';
-import { FC, useCallback, useEffect, useReducer, useState } from 'react';
+import { GroupBadgePartsComposer, GroupBadgePartsEvent, GroupPurchasedEvent, GroupSettingsComposer, ILinkEventTracker } from '@nitrots/nitro-renderer';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { AddEventLinkTracker, RemoveLinkEventTracker, TryVisitRoom } from '../../api';
-import { BatchUpdates, CreateMessageHook, SendMessageHook } from '../../hooks';
+import { CreateMessageHook, SendMessageHook } from '../../hooks';
+import { CompareId } from './common/CompareId';
+import { IGroupCustomize } from './common/IGroupCustomize';
 import { GroupsContextProvider } from './GroupsContext';
-import { GroupsMessageHandler } from './GroupsMessageHandler';
-import { GroupsReducer, initialGroups } from './reducers/GroupsReducer';
-import { GroupCreatorView } from './views/creator/GroupCreatorView';
-import { GroupInformationStandaloneView } from './views/information-standalone/GroupInformationStandaloneView';
-import { GroupManagerView } from './views/manager/GroupManagerView';
-import { GroupMembersView } from './views/members/GroupMembersView';
+import { GroupCreatorView } from './views/GroupCreatorView';
+import { GroupInformationStandaloneView } from './views/GroupInformationStandaloneView';
+import { GroupManagerView } from './views/GroupManagerView';
+import { GroupMembersView } from './views/GroupMembersView';
 
 export const GroupsView: FC<{}> = props =>
 {
-    const [ isCreatorVisible, setIsCreatorVisible ] = useState<boolean>(false);
-    const [ groupMembersId, setGroupMembersId ] = useState<number>(null);
-    const [ groupMembersLevel, setGroupMembersLevel ] = useState<number>(null);
-    const [ groupsState, dispatchGroupsState ] = useReducer(GroupsReducer, initialGroups);
+    const [ isCreatorVisible, setCreatorVisible ] = useState<boolean>(false);
+    const [ groupCustomize, setGroupCustomize ] = useState<IGroupCustomize>(null);
 
     const onGroupPurchasedEvent = useCallback((event: GroupPurchasedEvent) =>
     {
         const parser = event.getParser();
 
-        setIsCreatorVisible(false);
+        setCreatorVisible(false);
         TryVisitRoom(parser.roomId);
     }, []);
 
     CreateMessageHook(GroupPurchasedEvent, onGroupPurchasedEvent);
 
-    const closeMembers = () =>
+    const onGroupBadgePartsEvent = useCallback((event: GroupBadgePartsEvent) =>
     {
-        BatchUpdates(() =>
-        {
-            setGroupMembersId(null);
-            setGroupMembersLevel(null);
-        });
-    }
+        const parser = event.getParser();
+
+        const customize: IGroupCustomize = {
+            badgeBases: [],
+            badgeSymbols: [],
+            badgePartColors: [],
+            groupColorsA: [],
+            groupColorsB: []
+        };
+
+        parser.bases.forEach((images, id) => customize.badgeBases.push({ id, images }));
+        parser.symbols.forEach((images, id) => customize.badgeSymbols.push({ id, images }));
+        parser.partColors.forEach((color, id) => customize.badgePartColors.push({ id, color }));
+        parser.colorsA.forEach((color, id) => customize.groupColorsA.push({ id, color }));
+        parser.colorsB.forEach((color, id) => customize.groupColorsB.push({ id, color }));
+
+        customize.badgeBases.sort(CompareId);
+        customize.badgeSymbols.sort(CompareId);
+        customize.badgePartColors.sort(CompareId);
+        customize.groupColorsA.sort(CompareId);
+        customize.groupColorsB.sort(CompareId);
+
+        setGroupCustomize(customize);
+    }, [ setGroupCustomize ]);
+
+    CreateMessageHook(GroupBadgePartsEvent, onGroupBadgePartsEvent);
 
     const linkReceived = useCallback((url: string) =>
     {
@@ -45,22 +63,13 @@ export const GroupsView: FC<{}> = props =>
         switch(parts[1])
         {
             case 'create':
-                setIsCreatorVisible(true);
+                setCreatorVisible(true);
                 return;
             case 'manage':
                 if(!parts[2]) return;
-                
+
+                setCreatorVisible(false);
                 SendMessageHook(new GroupSettingsComposer(Number(parts[2])));
-                return;
-            case 'members':
-                if(!parts[2]) return;
-
-                BatchUpdates(() =>
-                {
-                    setGroupMembersId(Number(parts[2]));
-
-                    if(parts[3]) setGroupMembersLevel(Number(parts[3]));
-                });
                 return;
         }
     }, []);
@@ -83,12 +92,13 @@ export const GroupsView: FC<{}> = props =>
     }, []);
     
     return (
-        <GroupsContextProvider value={ { groupsState, dispatchGroupsState } }>
-            <GroupsMessageHandler />
+        <GroupsContextProvider value={ { groupCustomize, setGroupCustomize } }>
             <div className="nitro-groups">
-                <GroupCreatorView isVisible={ isCreatorVisible } onClose={ () => setIsCreatorVisible(false) } />
-                <GroupManagerView />
-                <GroupMembersView groupId={ groupMembersId } levelId={ groupMembersLevel } onClose={ closeMembers } />
+                { isCreatorVisible &&
+                    <GroupCreatorView onClose={ () => setCreatorVisible(false) } /> }
+                { !isCreatorVisible &&
+                    <GroupManagerView /> }
+                <GroupMembersView />
                 <GroupInformationStandaloneView />
             </div>
         </GroupsContextProvider>

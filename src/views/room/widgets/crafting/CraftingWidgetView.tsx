@@ -2,9 +2,9 @@ import { CraftableProductsEvent, CraftingRecipeEvent, GetCraftableProductsCompos
 import { FC, useCallback, useEffect, useState } from 'react';
 import { GetSessionDataManager, LocalizeText } from '../../../../api';
 import { RoomWidgetCraftingEvent } from '../../../../api/nitro/room/widgets/events/RoomWidgetCraftingEvent';
+import { GetInventoryGroupItems } from '../../../../components/inventory/common/InventoryGroupItems';
 import { BatchUpdates, CreateEventDispatcherHook, CreateMessageHook, SendMessageHook } from '../../../../hooks';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardView, NitroLayoutGrid, NitroLayoutGridColumn } from '../../../../layout';
-import { GetInventoryGroupItems } from '../../../inventory/common/InventoryGroupItems';
 import { useRoomContext } from '../../context/RoomContext';
 import { ActiveCraftingIngredientsView } from './active-crafting-ingredients/ActiveCraftingIngredientsView';
 import { CraftingActiveRecipeView } from './active-recipe/CraftingActiveRecipeView';
