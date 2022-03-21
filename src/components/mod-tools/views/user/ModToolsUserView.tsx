@@ -1,5 +1,5 @@
 import { FriendlyTime, GetModeratorUserInfoMessageComposer, ModeratorUserInfoData, ModeratorUserInfoEvent } from '@nitrots/nitro-renderer';
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { LocalizeText, SendMessageComposer } from '../../../../api';
 import { Button, Column, DraggableWindowPosition, Grid, NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../../../common';
 import { ModToolsOpenUserChatlogEvent } from '../../../../events';
@@ -8,15 +8,18 @@ import { ModToolsUserModActionView } from './ModToolsUserModActionView';
 import { ModToolsUserRoomVisitsView } from './ModToolsUserRoomVisitsView';
 import { ModToolsUserSendMessageView } from './ModToolsUserSendMessageView';
 
-interface ModToolsUserViewProps
+interface ModToolsUserViewProps<T = HTMLDivElement>
 {
+    innerRef?: MutableRefObject<T>;
     userId: number;
     onCloseClick: () => void;
+    offsetLeft?: number;
+    offsetTop?: number;
 }
 
 export const ModToolsUserView: FC<ModToolsUserViewProps> = props =>
 {
-    const { onCloseClick = null, userId = null } = props;
+    const { innerRef = null, onCloseClick = null, userId = null, offsetLeft = 0, offsetTop = 0 } = props;
     const [ userInfo, setUserInfo ] = useState<ModeratorUserInfoData>(null);
     const [ sendMessageVisible, setSendMessageVisible ] = useState(false);
     const [ modActionVisible, setModActionVisible ] = useState(false);
@@ -107,7 +110,7 @@ export const ModToolsUserView: FC<ModToolsUserViewProps> = props =>
 
     return (
         <>
-            <NitroCardView className="nitro-mod-tools-user" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT}>
+            <NitroCardView className="nitro-mod-tools-user" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT} innerRef={ innerRef } offsetLeft={ offsetLeft }>
                 <NitroCardHeaderView headerText={ LocalizeText('modtools.userinfo.title', [ 'username' ], [ userInfo.userName ]) } onCloseClick={ () => onCloseClick() } />
                 <NitroCardContentView className="text-black">
                     <Grid overflow="hidden">
@@ -149,11 +152,11 @@ export const ModToolsUserView: FC<ModToolsUserViewProps> = props =>
                 </NitroCardContentView>
             </NitroCardView>
             { sendMessageVisible &&
-                <ModToolsUserSendMessageView user={ { userId: userId, username: userInfo.userName } } onCloseClick={ () => setSendMessageVisible(false) } /> }
+                <ModToolsUserSendMessageView offsetTop={ offsetTop } user={ { userId: userId, username: userInfo.userName } } onCloseClick={ () => setSendMessageVisible(false) } /> }
             { modActionVisible &&
-                <ModToolsUserModActionView user={ { userId: userId, username: userInfo.userName } } onCloseClick={ () => setModActionVisible(false) } /> }
+                <ModToolsUserModActionView offsetLeft={ innerRef.current.offsetWidth + 10 + offsetLeft } user={{ userId: userId, username: userInfo.userName }} onCloseClick={() => setModActionVisible(false)} /> }
             { roomVisitsVisible &&
-                <ModToolsUserRoomVisitsView userId={ userId } onCloseClick={ () => setRoomVisitsVisible(false) } /> }
+                <ModToolsUserRoomVisitsView offsetLeft={ innerRef.current.offsetWidth + 10 + offsetLeft } userId={ userId } onCloseClick={ () => setRoomVisitsVisible(false) } /> }
         </>
     );
 }

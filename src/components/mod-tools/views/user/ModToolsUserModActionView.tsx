@@ -10,6 +10,7 @@ interface ModToolsUserModActionViewProps
 {
     user: ISelectedUser;
     onCloseClick: () => void;
+    offsetLeft: number;
 }
 
 const MOD_ACTION_DEFINITIONS = [
@@ -29,7 +30,7 @@ const MOD_ACTION_DEFINITIONS = [
 
 export const ModToolsUserModActionView: FC<ModToolsUserModActionViewProps> = props =>
 {
-    const { user = null, onCloseClick = null } = props;
+    const { user = null, onCloseClick = null, offsetLeft = 0 } = props;
     const [ selectedTopic, setSelectedTopic ] = useState(-1);
     const [ selectedAction, setSelectedAction ] = useState(-1);
     const [ message, setMessage ] = useState<string>('');
@@ -153,7 +154,7 @@ export const ModToolsUserModActionView: FC<ModToolsUserModActionViewProps> = pro
     if(!user) return null;
 
     return (
-        <NitroCardView className="nitro-mod-tools-user-action" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT}>
+        <NitroCardView className="nitro-mod-tools-user-action" theme="primary-slim" windowPosition={DraggableWindowPosition.TOP_LEFT} offsetLeft={ offsetLeft }>
             <NitroCardHeaderView headerText={'Mod Action: ' + (user ? user.username : '')} onCloseClick={ () => onCloseClick() } />
             <NitroCardContentView className="text-black">
                 <select className="form-select form-select-sm" value={ selectedTopic } onChange={ event => setSelectedTopic(parseInt(event.target.value)) }>

@@ -9,11 +9,12 @@ interface ModToolsUserRoomVisitsViewProps
 {
     userId: number;
     onCloseClick: () => void;
+    offsetLeft?: number;
 }
 
 export const ModToolsUserRoomVisitsView: FC<ModToolsUserRoomVisitsViewProps> = props =>
 {
-    const { userId = null, onCloseClick = null } = props;
+    const { userId = null, onCloseClick = null, offsetLeft = 0 } = props;
     const [ roomVisitData, setRoomVisitData ] = useState<RoomVisitsData>(null);
 
     const onModtoolReceivedRoomsUserEvent = useCallback((event: RoomVisitsEvent) =>
@@ -48,7 +49,7 @@ export const ModToolsUserRoomVisitsView: FC<ModToolsUserRoomVisitsViewProps> = p
     if(!userId) return null;
 
     return (
-        <NitroCardView className="nitro-mod-tools-user-visits" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT}>
+        <NitroCardView className="nitro-mod-tools-user-visits" theme="primary-slim" windowPosition={DraggableWindowPosition.TOP_LEFT} offsetLeft={ offsetLeft }>
             <NitroCardHeaderView headerText={ 'User Visits' } onCloseClick={ onCloseClick } />
             <NitroCardContentView className="text-black" gap={ 1 }>
                 <Column fullHeight gap={ 0 } overflow="hidden">

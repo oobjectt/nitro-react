@@ -1,5 +1,5 @@
 import { RoomEngineObjectEvent, RoomObjectCategory } from '@nitrots/nitro-renderer';
-import { FC, useCallback, useReducer, useState } from 'react';
+import { FC, useCallback, useReducer, useRef, useState } from 'react';
 import { GetRoomSession } from '../../api';
 import { Base, Button, DraggableWindowPosition, NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../common';
 import { ModToolsEvent, ModToolsOpenRoomChatlogEvent, ModToolsOpenRoomInfoEvent, ModToolsOpenUserInfoEvent } from '../../events';
@@ -21,6 +21,10 @@ export const ModToolsView: FC<{}> = props =>
     const [ isTicketsVisible, setIsTicketsVisible ] = useState(false);
     const [ modToolsState, dispatchModToolsState ] = useReducer(ModToolsReducer, initialModTools);
     const { currentRoomId = null, openRooms = null, openRoomChatlogs = null, openUserChatlogs = null, openUserInfo = null } = modToolsState;
+    const mainRef = useRef<HTMLDivElement>();
+    const roomRef = useRef<HTMLDivElement>();
+    const chatRef = useRef<HTMLDivElement>();
+    const userRef = useRef<HTMLDivElement>();
 
     const onModToolsEvent = useCallback((event: ModToolsEvent) =>
     {
@@ -180,12 +184,26 @@ export const ModToolsView: FC<{}> = props =>
         }
     }, [openRooms, currentRoomId, openRoomChatlogs, selectedUser, openUserInfo, openUserChatlogs]);
 
+    const calculateOffset = (elements: HTMLDivElement[]) =>
+    {
+        let x = 0;
+        let y = 0;
+        elements.forEach(el =>
+        {   
+            if(el)
+            { 
+                x += el.offsetWidth + 10;
+                y += el.offsetHeight + 10;
+            }
+        })
+        return { x,y };
+    };
     return (
         <ModToolsContextProvider value={ { modToolsState, dispatchModToolsState } }>
             <ModToolsMessageHandler />
             { isVisible &&
-                <NitroCardView uniqueKey="mod-tools" className="nitro-mod-tools" windowPosition={ DraggableWindowPosition.TOP_LEFT } theme="primary-slim" >
-                    <NitroCardHeaderView headerText={ 'Mod Tools' } onCloseClick={ event => setIsVisible(false) } />
+                <NitroCardView innerRef={ mainRef } uniqueKey="mod-tools" className="nitro-mod-tools" windowPosition={ DraggableWindowPosition.TOP_LEFT } theme="primary-slim" >
+                    <NitroCardHeaderView headerText={'Mod Tools'} onCloseClick={event => setIsVisible(false)} />
                     <NitroCardContentView className="text-black" gap={ 1 }>
                         <Button gap={ 1 } onClick={ event => handleClick('toggle_room') } disabled={ !currentRoomId } className="position-relative">
                             <Base className="icon icon-small-room position-absolute start-1"/> Room Tool
@@ -203,22 +221,22 @@ export const ModToolsView: FC<{}> = props =>
                 </NitroCardView> }
             { openRooms && openRooms.map(roomId =>
                 {
-                    return <ModToolsRoomView key={ roomId } roomId={ roomId } onCloseClick={ () => handleClick('close_room', roomId.toString()) } />;
+                    return <ModToolsRoomView offsetLeft={calculateOffset([mainRef.current, chatRef.current]).x} innerRef={roomRef} key={roomId} roomId={roomId} onCloseClick={() => handleClick('close_room', roomId.toString())} />;
                 }) 
             }
             { openRoomChatlogs && openRoomChatlogs.map(roomId =>
                 {
-                    return <ModToolsChatlogView key={ roomId } roomId={ roomId } onCloseClick={ () => handleClick('close_room_chatlog', roomId.toString()) } />;
+                return <ModToolsChatlogView offsetLeft={calculateOffset([mainRef.current, roomRef.current]).x} innerRef={ chatRef } key={ roomId } roomId={ roomId } onCloseClick={ () => handleClick('close_room_chatlog', roomId.toString()) } />;
                 })
             }
             { openUserInfo && openUserInfo.map(userId =>
                 {
-                    return <ModToolsUserView key={userId} userId={userId} onCloseClick={ () => handleClick('close_user_info', userId.toString())}/>
+                return <ModToolsUserView innerRef={ userRef } offsetLeft={calculateOffset([mainRef.current]).x} offsetTop={calculateOffset([mainRef.current]).y} key={userId} userId={userId} onCloseClick={ () => handleClick('close_user_info', userId.toString())}/>
                 })
             }
             { openUserChatlogs && openUserChatlogs.map(userId =>
                 {
-                    return <ModToolsUserChatlogView key={userId} userId={userId} onCloseClick={ () => handleClick('close_user_chatlog', userId.toString())}/>
+                    return <ModToolsUserChatlogView offsetLeft={calculateOffset([mainRef.current,userRef.current]).x} key={userId} userId={userId} onCloseClick={ () => handleClick('close_user_chatlog', userId.toString())}/>
                 })
             }
             

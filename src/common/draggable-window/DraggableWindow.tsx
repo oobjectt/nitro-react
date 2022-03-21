@@ -213,7 +213,7 @@ export const DraggableWindow: FC<DraggableWindowProps> = props =>
 
             if(index >= 0) CURRENT_WINDOWS.splice(index, 1);
         }
-    }, [ handleSelector, windowPosition, uniqueKey, disableDrag, bringToTop ]);
+    }, [ handleSelector, windowPosition, uniqueKey, disableDrag, bringToTop, offsetLeft, offsetTop ]);
 
     useEffect(() =>
     {

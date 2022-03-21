@@ -1,19 +1,23 @@
 import { GetModeratorRoomInfoMessageComposer, ModerateRoomMessageComposer, ModeratorActionMessageComposer, ModeratorRoomInfoEvent } from '@nitrots/nitro-renderer';
-import { FC, useCallback, useEffect, useState } from 'react';
-import { SendMessageComposer, TryVisitRoom } from '../../../../api';
+import { FC, LegacyRef, useCallback, useEffect, useState } from 'react';
+import { LocalizeText, SendMessageComposer, TryVisitRoom } from '../../../../api';
 import { Button, Column, DraggableWindowPosition, Flex, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../../../common';
 import { ModToolsOpenRoomChatlogEvent } from '../../../../events/mod-tools/ModToolsOpenRoomChatlogEvent';
 import { BatchUpdates, DispatchUiEvent, UseMessageEventHook } from '../../../../hooks';
+import { useModToolsContext } from '../../ModToolsContext';
 
-interface ModToolsRoomViewProps
+interface ModToolsRoomViewProps<T = HTMLDivElement>
 {
+    innerRef?: LegacyRef<T>;
     roomId: number;
     onCloseClick: () => void;
+    offsetLeft?: number;
+    offsetTop?: number;
 }
 
 export const ModToolsRoomView: FC<ModToolsRoomViewProps> = props =>
 {
-    const { roomId = null, onCloseClick = null } = props;
+    const { innerRef = null, roomId = null, onCloseClick = null, offsetLeft = 0, offsetTop = 0 } = props;
 
     const [ infoRequested, setInfoRequested ] = useState(false);
     const [ loadedRoomId, setLoadedRoomId ] = useState(null);
@@ -29,6 +33,8 @@ export const ModToolsRoomView: FC<ModToolsRoomViewProps> = props =>
     const [ lockRoom, setLockRoom ] = useState(false);
     const [ changeRoomName, setChangeRoomName ] = useState(false);
     const [ message, setMessage ] = useState('');
+    
+    const { modToolsState } = useModToolsContext();
 
     const onModtoolRoomInfoEvent = useCallback((event: ModeratorRoomInfoEvent) =>
     {
@@ -79,47 +85,55 @@ export const ModToolsRoomView: FC<ModToolsRoomViewProps> = props =>
     }, [ roomId, infoRequested, setInfoRequested ]);
 
     return (
-        <NitroCardView className="nitro-mod-tools-room" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT}>
-            <NitroCardHeaderView headerText={ 'Room Info' + (name ? ': ' + name : '') } onCloseClick={ event => onCloseClick() } />
+        <NitroCardView className="nitro-mod-tools-room" theme="primary-slim" windowPosition={DraggableWindowPosition.TOP_LEFT} offsetLeft={ offsetLeft } offsetTop={ offsetTop } innerRef={ innerRef } >
+            <NitroCardHeaderView headerText={ LocalizeText('modtools.header.room',['room'],[name]) } onCloseClick={ event => onCloseClick() } />
             <NitroCardContentView className="text-black">
                 <Flex gap={ 2 }>
                     <Column justifyContent="center" grow gap={ 1 }>
                         <Flex alignItems="center" gap={ 2 }>
-                            <Text bold align="end" className="col-7">Room Owner:</Text>
+                            <Text bold align="end" className="col-7">{ LocalizeText('modtools.rooms.owner') }</Text>
                             <Text underline pointer truncate>{ ownerName }</Text>
                         </Flex>
                         <Flex alignItems="center" gap={ 2 }>
-                            <Text bold align="end" className="col-7">Users in room:</Text>
+                            <Text bold align="end" className="col-7">{ LocalizeText('modtools.rooms.users') }</Text>
                             <Text>{ usersInRoom }</Text>
                         </Flex>
                         <Flex alignItems="center" gap={ 2 }>
-                            <Text bold align="end" className="col-7">Owner in room:</Text>
-                            <Text>{ ownerInRoom ? 'Yes' : 'No' }</Text>
+                            <Text bold align="end" className="col-7">{ LocalizeText('modtools.rooms.owner.in') }</Text>
+                            <Text>{ ownerInRoom ? LocalizeText('generic.yes') : LocalizeText('generic.no') }</Text>
                         </Flex>
                     </Column>
                     <Column gap={ 1 }>
-                        <Button onClick={ event => TryVisitRoom(roomId) }>Visit Room</Button>
-                        <Button onClick={ event => DispatchUiEvent(new ModToolsOpenRoomChatlogEvent(roomId)) }>Chatlog</Button>
+                        <Button onClick={event => TryVisitRoom(roomId)}>{ LocalizeText('modtools.rooms.visit') }</Button>
+                        <Button onClick={ event => DispatchUiEvent(new ModToolsOpenRoomChatlogEvent(roomId)) }>{ LocalizeText('modtools.rooms.chatlog') }</Button>
                     </Column>
                 </Flex>
                 <Column className="bg-muted rounded p-2" gap={ 1 }>
                     <Flex alignItems="center" gap={ 1 }>
                         <input className="form-check-input" type="checkbox" checked={ kickUsers } onChange={ event => setKickUsers(event.target.checked) } />
-                        <Text small>Kick everyone out</Text>
+                        <Text small>{ LocalizeText('modtools.rooms.kick') }</Text>
                     </Flex>
                     <Flex alignItems="center" gap={ 1 }>
                         <input className="form-check-input" type="checkbox" checked={ lockRoom } onChange={ event => setLockRoom(event.target.checked) } />
-                        <Text small>Enable the doorbell</Text>
+                        <Text small>{ LocalizeText('modtools.rooms.doorbell') }</Text>
                     </Flex>
                     <Flex alignItems="center" gap={ 1 }>
                         <input className="form-check-input" type="checkbox" checked={ changeRoomName } onChange={ event => setChangeRoomName(event.target.checked) }/>
-                        <Text small>Change room name</Text>
+                        <Text small>{ LocalizeText('modtools.rooms.change.name') }</Text>
                     </Flex>
                 </Column>
-                <textarea className="form-control" placeholder="Type a mandatory message to the users in this text box..." value={ message } onChange={ event => setMessage(event.target.value) }></textarea>
+                <select className="form-select form-select-sm" onChange={(e) => setMessage(e.target.value)}>
+                    <option disabled selected>{ LocalizeText('modtools.templates') }</option>
+                    { modToolsState.settings.roomMessageTemplates.map(el =>
+                    {
+                        return <option value={ el }>{ el }</option>
+                     })
+                    }
+                </select>
+                <textarea className="form-control" placeholder={ LocalizeText('modtools.rooms.message') } value={ message } onChange={ event => setMessage(event.target.value) }></textarea>
                 <Flex justifyContent="between">
-                    <Button variant="danger" onClick={ event => handleClick('send_message') }>Send Caution</Button>
-                    <Button onClick={ event => handleClick('alert_only') }>Send Alert only</Button>
+                    <Button variant="danger" onClick={ event => handleClick('send_message') }>{ LocalizeText('modtools.rooms.caution') }</Button>
+                    <Button onClick={ event => handleClick('alert_only') }>{ LocalizeText('modtools.rooms.alert') }</Button>
                 </Flex>
             </NitroCardContentView>
         </NitroCardView>

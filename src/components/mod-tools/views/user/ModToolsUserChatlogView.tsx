@@ -9,11 +9,12 @@ interface ModToolsUserChatlogViewProps
 {
     userId: number;
     onCloseClick: () => void;
+    offsetLeft: number;
 }
 
 export const ModToolsUserChatlogView: FC<ModToolsUserChatlogViewProps> = props =>
 {
-    const { userId = null, onCloseClick = null } = props;
+    const { userId = null, onCloseClick = null, offsetLeft = 0 } = props;
     const [ userChatlog, setUserChatlog ] = useState<ChatRecordData[]>(null);
     const [ username, setUsername ] = useState<string>(null);
     
@@ -38,7 +39,7 @@ export const ModToolsUserChatlogView: FC<ModToolsUserChatlogViewProps> = props =
     }, [ userId ]);
 
     return (
-        <NitroCardView className="nitro-mod-tools-chatlog" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT}>
+        <NitroCardView className="nitro-mod-tools-chatlog" theme="primary-slim" windowPosition={DraggableWindowPosition.TOP_LEFT} offsetLeft={ offsetLeft }>
             <NitroCardHeaderView headerText={ `User Chatlog: ${ username || '' }` } onCloseClick={ onCloseClick } />
             <NitroCardContentView className="text-black h-100">
                 { userChatlog &&
