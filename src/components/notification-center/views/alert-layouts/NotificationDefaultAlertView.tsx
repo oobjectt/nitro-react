@@ -25,7 +25,8 @@ export const NotificationDefaultAlertView: FC<NotificationDefaultAlertViewProps>
     return (
         <LayoutNotificationAlertView title={title} close={close} {...rest}>
             <Flex fullHeight overflow="auto" gap={ 2 }>
-                { hasFrank && <Base className="notification-frank flex-shrink-0" /> }
+                { hasFrank && !item.imageUrl && <Base className="notification-frank flex-shrink-0" /> }
+                {item.imageUrl && <img src={item.imageUrl} alt={ item.title }/> }
                 { (item.messages.length > 0) && item.messages.map((message, index) =>
                 {
                     const htmlText = message.replace(/\r\n|\r|\n/g, '<br />');
