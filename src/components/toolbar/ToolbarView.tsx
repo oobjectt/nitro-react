@@ -208,7 +208,7 @@ export const ToolbarView: FC<ToolbarViewProps> = props =>
                     </Flex>
                     <Flex alignItems="center" id="toolbar-chat-input-container" />
                 </Flex>
-                <Flex alignItems="center" gap={ 2 }>
+                <Flex alignItems="center" gap={2} className="w-50 justify-content-end">
                     <Flex gap={ 2 }>
                         <Base pointer className="navigation-item icon icon-friendall" onClick={ event => handleToolbarItemClick(ToolbarViewItems.FRIEND_LIST_ITEM) }>
                             { (unseenFriendRequestCount > 0) &&
