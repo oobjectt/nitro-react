@@ -20,7 +20,7 @@ export const NotificationDefaultAlertView: FC<NotificationDefaultAlertViewProps>
         close();
     }, [item, close]);
     
-    const hasFrank = item.alertType === NotificationAlertType.DEFAULT || (item.alertType === NotificationAlertType.DEFAULT && item.clickUrl)
+    const hasFrank = item.alertType === NotificationAlertType.DEFAULT;
 
     return (
         <LayoutNotificationAlertView title={title} close={close} {...rest} className={'nitro-alert-' + (hasFrank ? NotificationAlertType.DEFAULT : item.alertType)}>
