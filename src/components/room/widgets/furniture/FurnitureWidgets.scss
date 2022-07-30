@@ -17,8 +17,7 @@
     .dimmer-banner {
         width: 56px;
         height: 79px;
-        background: url("../../../../assets/images/room-widgets/dimmer-widget/dimmer_banner.png")
-            center no-repeat;
+        background: url("../../../../assets/images/room-widgets/dimmer-widget/dimmer_banner.png") center no-repeat;
     }
 
     .color-swatch {
@@ -202,7 +201,7 @@
     font-weight: bold;
     font-size: 16px;
     text-shadow: 0px 1px white;
-    
+
     &.engraving-lock-3 {
         background-position: 0px -210px;
         color: #614110;
@@ -262,7 +261,7 @@
 
     .youtube-video-container {
         //min-height: 366px;
-        
+
         .empty-video {
             background-color: black;
             color: white;
@@ -298,6 +297,7 @@
 
         .playlist-controls {
             width: 100%;
+
             .icon {
                 margin-right: 10px;
                 margin-bottom: 10px;
@@ -308,5 +308,34 @@
             height: 100%;
             width: 100%;
         }
+    }
+}
+
+.nitro-playlist-editor-widget {
+    width: 600px;
+    height: 440px;
+
+    .my-music {
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        z-index: 0;
+    }
+
+    .playlist-img {
+        position: absolute;
+        top: 0;
+        z-index: 0;
+    }
+
+    .get-more {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 0;
+    }
+
+    .playlist-bottom {
+        z-index: 3;
     }
 }
