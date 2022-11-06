@@ -31,6 +31,11 @@
     }
 }
 
+.nitro-widget-crafting {
+  width: $nitro-widget-crafting-width;
+  height: $nitro-widget-crafting-height;
+}
+
 .nitro-widget-exchange-credit {
     width: $nitro-widget-exchange-credit-width;
     height: $nitro-widget-exchange-credit-height;
@@ -43,9 +48,24 @@
 }
 
 .nitro-external-image-widget {
+
     .picture-preview {
         width: 320px;
         height: 320px;
+    }
+
+    .picture-preview-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: black;
+    }
+
+    .picture-preview-buttons-previous, .picture-preview-buttons-next {
+        color: #222;
+        background-color: white;
+        padding: 10px;
+        border-radius: 50%;
     }
 }
 
@@ -158,6 +178,26 @@
 
     &.stickie-pink {
         background-position: -2px -184px;
+    }
+
+    &.stickie-christmas {
+        background-image: url("../../../../assets/images/room-widgets/stickie-widget/stickie-christmas.png");
+    }
+
+    &.stickie-shakesp {
+        background-image: url("../../../../assets/images/room-widgets/stickie-widget/stickie-shakesp.png");
+    }
+
+    &.stickie-dreams {
+        background-image: url("../../../../assets/images/room-widgets/stickie-widget/stickie-dreams.png");
+    }
+
+    &.stickie-heart {
+        background-image: url("../../../../assets/images/room-widgets/stickie-widget/stickie-heart.png");
+    }
+
+    &.stickie-juninas {
+        background-image: url("../../../../assets/images/room-widgets/stickie-widget/stickie-juninas.png");
     }
 
     &.stickie-close {

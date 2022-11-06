@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { LocalizeText } from '../../../../api';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../../../common';
 import { HelpNameChangeEvent } from '../../../../events';
@@ -17,15 +17,7 @@ export const NameChangeView:FC<{}> = props =>
     const [ layout, setLayout ] = useState<string>(INIT);
     const [ newUsername, setNewUsername ] = useState<string>('');
 
-    const onHelpNameChangeEvent = useCallback((event: HelpNameChangeEvent) =>
-    {
-        setLayout(INIT);
-        setIsVisible(true);
-    }, []);
-
-    useUiEvent(HelpNameChangeEvent.INIT, onHelpNameChangeEvent);
-
-    const onAction = useCallback((action: string, value?: string) =>
+    const onAction = (action: string, value?: string) =>
     {
         switch(action)
         {
@@ -41,7 +33,7 @@ export const NameChangeView:FC<{}> = props =>
                 setIsVisible(false);
                 break;
         }
-    }, []);
+    }
 
     const titleKey = useMemo(() =>
     {
@@ -52,6 +44,12 @@ export const NameChangeView:FC<{}> = props =>
             case CONFIRMATION: return 'tutorial.name_change.title.confirm';
         }
     }, [ layout ]);
+
+    useUiEvent<HelpNameChangeEvent>(HelpNameChangeEvent.INIT, event =>
+    {
+        setLayout(INIT);
+        setIsVisible(true);
+    });
     
     if(!isVisible) return null;
 

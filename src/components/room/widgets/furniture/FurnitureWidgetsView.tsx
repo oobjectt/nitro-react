@@ -3,6 +3,7 @@ import { Base } from '../../../../common';
 import { FurnitureContextMenuView } from './context-menu/FurnitureContextMenuView';
 import { FurnitureBackgroundColorView } from './FurnitureBackgroundColorView';
 import { FurnitureBadgeDisplayView } from './FurnitureBadgeDisplayView';
+import { FurnitureCraftingView } from './FurnitureCraftingView';
 import { FurnitureDimmerView } from './FurnitureDimmerView';
 import { FurnitureExchangeCreditView } from './FurnitureExchangeCreditView';
 import { FurnitureExternalImageView } from './FurnitureExternalImageView';
@@ -13,6 +14,7 @@ import { FurnitureInternalLinkView } from './FurnitureInternalLinkView';
 import { FurnitureMannequinView } from './FurnitureMannequinView';
 import { FurniturePlaylistEditorWidgetView } from './FurniturePlaylistEditorWidgetView';
 import { FurnitureRoomLinkView } from './FurnitureRoomLinkView';
+import { FurnitureSpamWallPostItView } from './FurnitureSpamWallPostItView';
 import { FurnitureStackHeightView } from './FurnitureStackHeightView';
 import { FurnitureStickieView } from './FurnitureStickieView';
 import { FurnitureTrophyView } from './FurnitureTrophyView';
@@ -24,7 +26,7 @@ export const FurnitureWidgetsView: FC<{}> = props =>
         <Base fit position="absolute" className="nitro-room-widgets top-0 start-0">
             <FurnitureBackgroundColorView />
             <FurnitureBadgeDisplayView />
-            <FurnitureStackHeightView />
+            <FurnitureCraftingView />
             <FurnitureDimmerView />
             <FurnitureExchangeCreditView />
             <FurnitureExternalImageView />
@@ -35,6 +37,8 @@ export const FurnitureWidgetsView: FC<{}> = props =>
             <FurnitureMannequinView />
             <FurniturePlaylistEditorWidgetView />
             <FurnitureRoomLinkView />
+            <FurnitureSpamWallPostItView />
+            <FurnitureStackHeightView />
             <FurnitureStickieView />
             <FurnitureTrophyView />
             <FurnitureContextMenuView />
