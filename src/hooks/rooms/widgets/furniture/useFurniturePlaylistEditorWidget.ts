@@ -40,6 +40,7 @@ const useFurniturePlaylistEditorWidgetState = () =>
             setObjectId(event.objectId);
             setCategory(event.category);
 
+            GetNitroInstance().soundManager.musicController?.requestUserSongDisks();
             GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.requestPlayList();
         }
         else
