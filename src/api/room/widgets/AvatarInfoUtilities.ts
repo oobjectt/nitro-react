@@ -1,4 +1,4 @@
-import { IFurnitureData, ObjectDataFactory, PetFigureData, PetType, RoomControllerLevel, RoomModerationSettings, RoomObjectCategory, RoomObjectType, RoomObjectVariable, RoomPetData, RoomTradingLevelEnum, RoomUserData, RoomWidgetEnumItemExtradataParameter, Vector3d } from '@nitrots/nitro-renderer';
+import { IFurnitureData, IRoomModerationSettings, IRoomUserData, ObjectDataFactory, PetFigureData, PetType, RoomControllerLevel, RoomModerationSettings, RoomObjectCategory, RoomObjectType, RoomObjectVariable, RoomPetData, RoomTradingLevelEnum, RoomWidgetEnumItemExtradataParameter, Vector3d } from '@nitrots/nitro-renderer';
 import { GetNitroInstance, GetRoomEngine, GetRoomSession, GetSessionDataManager, IsOwnerOfFurniture } from '../../nitro';
 import { LocalizeText } from '../../utils';
 import { AvatarInfoFurni } from './AvatarInfoFurni';
@@ -170,7 +170,7 @@ export class AvatarInfoUtilities
         return furniInfo;
     }
 
-    public static getUserInfo(category: number, userData: RoomUserData): AvatarInfoUser
+    public static getUserInfo(category: number, userData: IRoomUserData): AvatarInfoUser
     {
         const roomSession = GetRoomSession();
 
@@ -267,7 +267,7 @@ export class AvatarInfoUtilities
         return userInfo;
     }
 
-    public static getBotInfo(category: number, userData: RoomUserData): AvatarInfoUser
+    public static getBotInfo(category: number, userData: IRoomUserData): AvatarInfoUser
     {
         const roomSession = GetRoomSession();
         const userInfo = new AvatarInfoUser(AvatarInfoUser.BOT);
@@ -293,7 +293,7 @@ export class AvatarInfoUtilities
         return userInfo;
     }
 
-    public static getRentableBotInfo(category: number, userData: RoomUserData): AvatarInfoRentableBot
+    public static getRentableBotInfo(category: number, userData: IRoomUserData): AvatarInfoRentableBot
     {
         const roomSession = GetRoomSession();
         const botInfo = new AvatarInfoRentableBot(AvatarInfoRentableBot.RENTABLE_BOT);
@@ -387,7 +387,7 @@ export class AvatarInfoUtilities
         return (userInfo.roomControllerLevel >= RoomControllerLevel.GUEST);
     }
 
-    private static isValidSetting(userInfo: AvatarInfoUser, checkSetting: (userInfo: AvatarInfoUser, moderation: RoomModerationSettings) => boolean): boolean
+    private static isValidSetting(userInfo: AvatarInfoUser, checkSetting: (userInfo: AvatarInfoUser, moderation: IRoomModerationSettings) => boolean): boolean
     {
         const roomSession = GetRoomSession();
 

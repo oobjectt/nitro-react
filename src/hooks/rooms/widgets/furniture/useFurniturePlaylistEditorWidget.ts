@@ -1,7 +1,8 @@
-import { AddJukeboxDiskComposer, FurnitureMultiStateComposer, GetJukeboxPlayListMessageComposer, JukeboxSongDisksMessageEvent, RemoveJukeboxDiskComposer, RoomControllerLevel, RoomEngineTriggerWidgetEvent } from '@nitrots/nitro-renderer';
+import { AddJukeboxDiskComposer, FurnitureMultiStateComposer, NotifyPlayedSongEvent, NowPlayingEvent, RemoveJukeboxDiskComposer, RoomControllerLevel, RoomEngineTriggerWidgetEvent } from '@nitrots/nitro-renderer';
 import { useState } from 'react';
-import { GetRoomEngine, GetSessionDataManager, IsOwnerOfFurniture, SendMessageComposer } from '../../../../api';
-import { useMessageEvent, useRoomEngineEvent } from '../../../events';
+import { GetNitroInstance, GetRoomEngine, GetSessionDataManager, IsOwnerOfFurniture, LocalizeText, NotificationBubbleType, SendMessageComposer } from '../../../../api';
+import { useRoomEngineEvent, useSoundEvent } from '../../../events';
+import { useNotification } from '../../../notification';
 import { useFurniRemovedEvent } from '../../engine';
 import { useRoom } from '../../useRoom';
 
@@ -10,6 +11,7 @@ const useFurniturePlaylistEditorWidgetState = () =>
     const [ objectId, setObjectId ] = useState(-1);
     const [ category, setCategory ] = useState(-1);
     const { roomSession = null } = useRoom();
+    const { showSingleBubble = null } = useNotification();
 
     const onClose = () =>
     {
@@ -23,7 +25,7 @@ const useFurniturePlaylistEditorWidgetState = () =>
 
     const togglePlayPause = (furniId: number, position: number) => SendMessageComposer(new FurnitureMultiStateComposer(furniId, position));
 
-    const openCatalogButtonPressed = () => 
+    const openCatalogButtonPressed = () =>
     {}
 
     useRoomEngineEvent<RoomEngineTriggerWidgetEvent>(RoomEngineTriggerWidgetEvent.REQUEST_PLAYLIST_EDITOR, event =>
@@ -35,6 +37,10 @@ const useFurniturePlaylistEditorWidgetState = () =>
         if(IsOwnerOfFurniture(roomObject))
         {
             // show the editor
+            setObjectId(event.objectId);
+            setCategory(event.category);
+
+            GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.requestPlayList();
         }
         else
         {
@@ -43,20 +49,6 @@ const useFurniturePlaylistEditorWidgetState = () =>
                 SendMessageComposer(new FurnitureMultiStateComposer(event.objectId, -2));
             }
         }
-
-        setObjectId(event.objectId);
-        setCategory(event.category);
-
-        SendMessageComposer(new GetJukeboxPlayListMessageComposer());
-    });
-
-    useMessageEvent<JukeboxSongDisksMessageEvent>(JukeboxSongDisksMessageEvent, event =>
-    {
-        if(objectId === -1) return;
-
-        const parser = event.getParser();
-
-        console.log(parser);
     });
 
     useFurniRemovedEvent(((objectId !== -1) && (category !== -1)), event =>
@@ -64,6 +56,21 @@ const useFurniturePlaylistEditorWidgetState = () =>
         if((event.id !== objectId) || (event.category !== category)) return;
 
         onClose();
+    });
+
+    useSoundEvent<NowPlayingEvent>(NowPlayingEvent.NPE_SONG_CHANGED, event =>
+    {
+
+    });
+
+    useSoundEvent<NowPlayingEvent>(NowPlayingEvent.NPE_USER_PLAY_SONG, event =>
+    {
+
+    });
+
+    useSoundEvent<NotifyPlayedSongEvent>(NotifyPlayedSongEvent.NOTIFY_PLAYED_SONG, event =>
+    {
+        showSingleBubble(LocalizeText('soundmachine.notification.playing', [ 'songname', 'songauthor' ], [ event.name, event.creator ]), NotificationBubbleType.SOUNDMACHINE)
     });
 
     return { objectId, onClose, addToPlaylist, removeFromPlaylist, togglePlayPause, openCatalogButtonPressed };
