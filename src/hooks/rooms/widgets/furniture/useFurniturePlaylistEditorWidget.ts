@@ -1,7 +1,7 @@
-import { AddJukeboxDiskComposer, AdvancedMap, FurnitureMultiStateComposer, IAdvancedMap, ISongInfo, NotifyPlayedSongEvent, NowPlayingEvent, PlayListStatusEvent, RemoveJukeboxDiskComposer, RoomControllerLevel, RoomEngineTriggerWidgetEvent, SongDiskInventoryReceivedEvent } from '@nitrots/nitro-renderer';
+import { AddJukeboxDiskComposer, AdvancedMap, FurnitureListAddOrUpdateEvent, FurnitureListEvent, FurnitureListRemovedEvent, FurnitureMultiStateComposer, IAdvancedMap, IMessageEvent, ISongInfo, NotifyPlayedSongEvent, NowPlayingEvent, PlayListStatusEvent, RemoveJukeboxDiskComposer, RoomControllerLevel, RoomEngineTriggerWidgetEvent, SongDiskInventoryReceivedEvent } from '@nitrots/nitro-renderer';
 import { useState } from 'react';
 import { GetNitroInstance, GetRoomEngine, GetSessionDataManager, IsOwnerOfFurniture, LocalizeText, NotificationBubbleType, SendMessageComposer } from '../../../../api';
-import { useRoomEngineEvent, useSoundEvent } from '../../../events';
+import { useMessageEvent, useRoomEngineEvent, useSoundEvent } from '../../../events';
 import { useNotification } from '../../../notification';
 import { useFurniRemovedEvent } from '../../engine';
 import { useRoom } from '../../useRoom';
@@ -25,7 +25,10 @@ const useFurniturePlaylistEditorWidgetState = () =>
 
     const removeFromPlaylist = (slotNumber: number) => SendMessageComposer(new RemoveJukeboxDiskComposer(slotNumber));
 
-    const togglePlayPause = (furniId: number, position: number) => SendMessageComposer(new FurnitureMultiStateComposer(furniId, position));
+    const togglePlayPause = (furniId: number, position: number) =>
+    {
+        SendMessageComposer(new FurnitureMultiStateComposer(furniId, position));
+    }
 
     const openCatalogButtonPressed = () =>
     {}
@@ -35,6 +38,7 @@ const useFurniturePlaylistEditorWidgetState = () =>
         const roomObject = GetRoomEngine().getRoomObject(event.roomId, event.objectId, event.category);
 
         if(!roomObject) return;
+        console.log(event);
 
         if(IsOwnerOfFurniture(roomObject))
         {
@@ -85,6 +89,26 @@ const useFurniturePlaylistEditorWidgetState = () =>
     {
         setPlaylist(GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.entries.concat())
     });
+
+    const onFurniListUpdated = (event : IMessageEvent) =>
+    {
+        console.log(event);
+        if(event instanceof FurnitureListEvent)
+        {
+            if(event.getParser().fragmentNumber === 0)
+            {
+                GetNitroInstance().soundManager.musicController?.requestUserSongDisks();
+            }
+        }
+        else
+        {
+            GetNitroInstance().soundManager.musicController?.requestUserSongDisks();
+        }
+    }
+
+    useMessageEvent(FurnitureListEvent, onFurniListUpdated);
+    useMessageEvent(FurnitureListRemovedEvent, onFurniListUpdated);
+    useMessageEvent(FurnitureListAddOrUpdateEvent, onFurniListUpdated);
 
     return { objectId, diskInventory, playlist, onClose, addToPlaylist, removeFromPlaylist, togglePlayPause, openCatalogButtonPressed };
 }

@@ -1,11 +1,16 @@
+import { IAdvancedMap } from '@nitrots/nitro-renderer';
 import { FC, useState } from 'react';
 import { GetConfiguration, GetNitroInstance, LocalizeText } from '../../../../../api';
 import { AutoGrid, LayoutGridItem } from '../../../../../common';
-import { useFurniturePlaylistEditorWidget } from '../../../../../hooks';
 
-export const DiskInventoryView: FC<{}> = props =>
+export interface DiskInventoryViewProps
 {
-    const { diskInventory = null, addToPlaylist = null } = useFurniturePlaylistEditorWidget();
+    diskInventory: IAdvancedMap<number, number>;
+    addToPlaylist(diskId: number, slotNumber: number): void;
+}
+export const DiskInventoryView: FC<DiskInventoryViewProps> = props =>
+{
+    const { diskInventory = null, addToPlaylist = null } = props;
     const [ selectedItem, setSelectedItem ] = useState<number>(-1);
 
     return (<>

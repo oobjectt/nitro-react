@@ -7,7 +7,7 @@ import { SongPlaylistView } from './SongPlaylistView';
 
 export const FurniturePlaylistEditorWidgetView: FC<{}> = props =>
 {
-    const { objectId = -1, onClose = null } = useFurniturePlaylistEditorWidget();
+    const { objectId = -1, playlist = null, diskInventory = null, onClose = null, togglePlayPause = null, removeFromPlaylist = null, addToPlaylist = null } = useFurniturePlaylistEditorWidget();
 
     if(objectId === -1) return null;
 
@@ -17,10 +17,10 @@ export const FurniturePlaylistEditorWidgetView: FC<{}> = props =>
             <NitroCardContentView>
                 <div className="d-flex flex-row gap-2 h-100">
                     <div className="w-50 position-relative overflow-hidden h-100 rounded d-flex flex-column">
-                        <DiskInventoryView />
+                        <DiskInventoryView addToPlaylist={ addToPlaylist } diskInventory={ diskInventory }/>
                     </div>
                     <div className="w-50 position-relative overflow-hidden h-100 rounded d-flex flex-column">
-                        <SongPlaylistView />
+                        <SongPlaylistView furniId={ objectId } removeFromPlaylist={ removeFromPlaylist } playlist={ playlist } togglePlayPause={ togglePlayPause } />
                     </div>
                 </div>
             </NitroCardContentView>

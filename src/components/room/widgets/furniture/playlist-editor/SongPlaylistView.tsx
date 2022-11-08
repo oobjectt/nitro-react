@@ -1,12 +1,21 @@
+import { ISongInfo } from '@nitrots/nitro-renderer';
 import { FC, useState } from 'react';
 import { GetConfiguration, LocalizeText } from '../../../../../api';
 import { AutoGrid, LayoutGridItem } from '../../../../../common';
-import { useFurniturePlaylistEditorWidget } from '../../../../../hooks';
 
-export const SongPlaylistView: FC<{}> = props =>
+export interface SongPlaylistViewProps
 {
-    const { playlist = null, removeFromPlaylist = null, togglePlayPause = null, objectId = -1 } = useFurniturePlaylistEditorWidget();
+    furniId: number;
+    playlist: ISongInfo[];
+    removeFromPlaylist(slotNumber: number): void;
+    togglePlayPause(furniId: number, position: number): void;
+}
+
+export const SongPlaylistView: FC<SongPlaylistViewProps> = props =>
+{
+    const { furniId = -1, playlist = null, removeFromPlaylist = null, togglePlayPause = null } = props;
     const [ selectedItem, setSelectedItem ] = useState<number>(-1);
+
 
     return (<>
         <div className="bg-primary py-3 container-fluid justify-content-center d-flex rounded">
@@ -37,7 +46,7 @@ export const SongPlaylistView: FC<{}> = props =>
         <img src={ GetConfiguration('image.library.url') + 'playlist/background_add_songs.gif' } className="add-songs" /></>
         }
         { (playlist && playlist.length > 0) &&
-            <button onClick={ () => togglePlayPause(objectId, selectedItem !== -1 ? selectedItem : 0 ) }>Play/Pause</button>
+            <button onClick={ () => togglePlayPause(furniId, selectedItem !== -1 ? selectedItem : 0 ) }>Play/Pause</button>
         }
 
     </>);
