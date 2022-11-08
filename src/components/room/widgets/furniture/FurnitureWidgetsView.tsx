@@ -12,13 +12,13 @@ import { FurnitureGiftOpeningView } from './FurnitureGiftOpeningView';
 import { FurnitureHighScoreView } from './FurnitureHighScoreView';
 import { FurnitureInternalLinkView } from './FurnitureInternalLinkView';
 import { FurnitureMannequinView } from './FurnitureMannequinView';
-import { FurniturePlaylistEditorWidgetView } from './FurniturePlaylistEditorWidgetView';
 import { FurnitureRoomLinkView } from './FurnitureRoomLinkView';
 import { FurnitureSpamWallPostItView } from './FurnitureSpamWallPostItView';
 import { FurnitureStackHeightView } from './FurnitureStackHeightView';
 import { FurnitureStickieView } from './FurnitureStickieView';
 import { FurnitureTrophyView } from './FurnitureTrophyView';
 import { FurnitureYoutubeDisplayView } from './FurnitureYoutubeDisplayView';
+import { FurniturePlaylistEditorWidgetView } from './playlist-editor/FurniturePlaylistEditorWidgetView';
 
 export const FurnitureWidgetsView: FC<{}> = props =>
 {

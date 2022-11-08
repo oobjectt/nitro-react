@@ -379,4 +379,15 @@
     .playlist-bottom {
         z-index: 3;
     }
+
+    .layout-grid-item {
+        min-height: 80px;
+        min-width: 80px;
+
+        .disk-image {
+            background: url('../../../../assets/images/room-widgets/playlist-editor/disk_image.png');
+            height: 76px;
+            width: 76px;
+        }
+    }
 }

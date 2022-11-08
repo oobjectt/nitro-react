@@ -1,4 +1,4 @@
-import { AddJukeboxDiskComposer, FurnitureMultiStateComposer, NotifyPlayedSongEvent, NowPlayingEvent, RemoveJukeboxDiskComposer, RoomControllerLevel, RoomEngineTriggerWidgetEvent } from '@nitrots/nitro-renderer';
+import { AddJukeboxDiskComposer, AdvancedMap, FurnitureMultiStateComposer, IAdvancedMap, ISongInfo, NotifyPlayedSongEvent, NowPlayingEvent, PlayListStatusEvent, RemoveJukeboxDiskComposer, RoomControllerLevel, RoomEngineTriggerWidgetEvent, SongDiskInventoryReceivedEvent } from '@nitrots/nitro-renderer';
 import { useState } from 'react';
 import { GetNitroInstance, GetRoomEngine, GetSessionDataManager, IsOwnerOfFurniture, LocalizeText, NotificationBubbleType, SendMessageComposer } from '../../../../api';
 import { useRoomEngineEvent, useSoundEvent } from '../../../events';
@@ -10,6 +10,8 @@ const useFurniturePlaylistEditorWidgetState = () =>
 {
     const [ objectId, setObjectId ] = useState(-1);
     const [ category, setCategory ] = useState(-1);
+    const [ diskInventory, setDiskInventory ] = useState<IAdvancedMap<number, number>>(new AdvancedMap());
+    const [ playlist, setPlaylist ] = useState<ISongInfo[]>([]);
     const { roomSession = null } = useRoom();
     const { showSingleBubble = null } = useNotification();
 
@@ -74,7 +76,17 @@ const useFurniturePlaylistEditorWidgetState = () =>
         showSingleBubble(LocalizeText('soundmachine.notification.playing', [ 'songname', 'songauthor' ], [ event.name, event.creator ]), NotificationBubbleType.SOUNDMACHINE)
     });
 
-    return { objectId, onClose, addToPlaylist, removeFromPlaylist, togglePlayPause, openCatalogButtonPressed };
+    useSoundEvent<SongDiskInventoryReceivedEvent>(SongDiskInventoryReceivedEvent.SDIR_SONG_DISK_INVENTORY_RECEIVENT_EVENT, event =>
+    {
+        setDiskInventory(GetNitroInstance().soundManager.musicController?.songDiskInventory.clone());
+    });
+
+    useSoundEvent<PlayListStatusEvent>(PlayListStatusEvent.PLUE_PLAY_LIST_UPDATED, event =>
+    {
+        setPlaylist(GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.entries.concat())
+    });
+
+    return { objectId, diskInventory, playlist, onClose, addToPlaylist, removeFromPlaylist, togglePlayPause, openCatalogButtonPressed };
 }
 
 export const useFurniturePlaylistEditorWidget = useFurniturePlaylistEditorWidgetState;
