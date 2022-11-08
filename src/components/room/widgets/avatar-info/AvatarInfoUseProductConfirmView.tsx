@@ -74,7 +74,7 @@ export const AvatarInfoUseProductConfirmView: FC<AvatarInfoUseProductConfirmView
             case FurniCategory.PET_CUSTOM_PART: {
                 if(customParts.length < 4) return null;
 
-                const newCustomParts: PetCustomPart[] = [];
+                const newCustomParts: IPetCustomPart[] = [];
 
                 const _local_6 = customParts[1].split(',').map(piece => parseInt(piece));
                 const _local_7 = customParts[2].split(',').map(piece => parseInt(piece));
@@ -101,7 +101,7 @@ export const AvatarInfoUseProductConfirmView: FC<AvatarInfoUseProductConfirmView
             case FurniCategory.PET_CUSTOM_PART_SHAMPOO: {
                 if(customParts.length < 3) return null;
 
-                const newCustomParts: PetCustomPart[] = [];
+                const newCustomParts: IPetCustomPart[] = [];
 
                 const _local_6 = customParts[1].split(',').map(piece => parseInt(piece));
                 const _local_8 = customParts[2].split(',').map(piece => parseInt(piece));

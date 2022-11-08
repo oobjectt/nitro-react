@@ -1,4 +1,4 @@
-import { IFurnitureData, IRoomModerationSettings, IRoomUserData, ObjectDataFactory, PetFigureData, PetType, RoomControllerLevel, RoomModerationSettings, RoomObjectCategory, RoomObjectType, RoomObjectVariable, RoomPetData, RoomTradingLevelEnum, RoomWidgetEnumItemExtradataParameter, Vector3d } from '@nitrots/nitro-renderer';
+import { IFurnitureData, IRoomModerationSettings, IRoomPetData, IRoomUserData, ObjectDataFactory, PetFigureData, PetType, RoomControllerLevel, RoomModerationSettings, RoomObjectCategory, RoomObjectType, RoomObjectVariable, RoomTradingLevelEnum, RoomWidgetEnumItemExtradataParameter, Vector3d } from '@nitrots/nitro-renderer';
 import { GetNitroInstance, GetRoomEngine, GetRoomSession, GetSessionDataManager, IsOwnerOfFurniture } from '../../nitro';
 import { LocalizeText } from '../../utils';
 import { AvatarInfoFurni } from './AvatarInfoFurni';
@@ -319,7 +319,7 @@ export class AvatarInfoUtilities
         return botInfo;
     }
 
-    public static getPetInfo(petData: RoomPetData): AvatarInfoPet
+    public static getPetInfo(petData: IRoomPetData): AvatarInfoPet
     {
         const roomSession = GetRoomSession();
         const userData = roomSession.userDataManager.getPetData(petData.id);
@@ -404,7 +404,7 @@ export class AvatarInfoUtilities
 
     private static canBeMuted(userInfo: AvatarInfoUser): boolean
     {
-        const checkSetting = (userInfo: AvatarInfoUser, moderation: RoomModerationSettings) =>
+        const checkSetting = (userInfo: AvatarInfoUser, moderation: IRoomModerationSettings) =>
         {
             switch(moderation.allowMute)
             {
@@ -420,7 +420,7 @@ export class AvatarInfoUtilities
 
     private static canBeKicked(userInfo: AvatarInfoUser): boolean
     {
-        const checkSetting = (userInfo: AvatarInfoUser, moderation: RoomModerationSettings) =>
+        const checkSetting = (userInfo: AvatarInfoUser, moderation: IRoomModerationSettings) =>
         {
             switch(moderation.allowKick)
             {
@@ -438,7 +438,7 @@ export class AvatarInfoUtilities
 
     private static canBeBanned(userInfo: AvatarInfoUser): boolean
     {
-        const checkSetting = (userInfo: AvatarInfoUser, moderation: RoomModerationSettings) =>
+        const checkSetting = (userInfo: AvatarInfoUser, moderation: IRoomModerationSettings) =>
         {
             switch(moderation.allowBan)
             {
