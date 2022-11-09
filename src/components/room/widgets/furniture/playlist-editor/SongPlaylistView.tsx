@@ -1,7 +1,7 @@
 import { ISongInfo } from '@nitrots/nitro-renderer';
 import { FC, useState } from 'react';
 import { GetConfiguration, LocalizeText } from '../../../../../api';
-import { Base, Button, Flex } from '../../../../../common';
+import { Base, Button, Flex, Text } from '../../../../../common';
 
 export interface SongPlaylistViewProps
 {
@@ -62,11 +62,18 @@ export const SongPlaylistView: FC<SongPlaylistViewProps> = props =>
                 </Button>
                 }
                 { (currentPlayingIndex !== -1) &&
-                    <><Button variant="danger" className="pause-btn" onClick={ () => playPause(furniId, selectedItem) }></Button>{ LocalizeText('playlist.editor.text.now.playing.in.your.room') }
-                        {
-                            playlist[currentPlayingIndex].name + ' - ' + playlist[currentPlayingIndex].creator
-                        }
-                    </>
+                    <Flex gap={ 1 }>
+                        <Button variant="danger" onClick={ () => playPause(furniId, selectedItem) }>
+                            <Base className="pause-song"/>
+                        </Button>
+                        <Flex column>
+                            <Text bold display="block">{ LocalizeText('playlist.editor.text.now.playing.in.your.room') }</Text>
+                            <Text>
+                                { playlist[currentPlayingIndex].name + ' - ' + playlist[currentPlayingIndex].creator }
+                            </Text>
+                        </Flex>
+
+                    </Flex>
                 }
             </>
         }
