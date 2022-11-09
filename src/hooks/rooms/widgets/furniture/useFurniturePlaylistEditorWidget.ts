@@ -66,7 +66,7 @@ const useFurniturePlaylistEditorWidgetState = () =>
         }
     });
 
-    const getDiskColour = (k:string): string => 
+    const getDiskColour = (k:string): string =>
     {
         console.log(k.length);
         var _local_2:number = 0;
@@ -162,7 +162,7 @@ const useFurniturePlaylistEditorWidgetState = () =>
     useMessageEvent(FurnitureListRemovedEvent, onFurniListUpdated);
     useMessageEvent(FurnitureListAddOrUpdateEvent, onFurniListUpdated);
 
-    return { objectId, diskInventory, playlist, onClose, addToPlaylist, removeFromPlaylist, togglePlayPause, openCatalogButtonPressed, getDiskColour };
+    return { objectId, diskInventory, playlist, currentPlayingIndex, onClose, addToPlaylist, removeFromPlaylist, togglePlayPause, openCatalogButtonPressed, getDiskColour };
 }
 
 export const useFurniturePlaylistEditorWidget = useFurniturePlaylistEditorWidgetState;
