@@ -15,7 +15,7 @@ export const FurniturePlaylistEditorWidgetView: FC<{}> = props =>
         <NitroCardView className="nitro-playlist-editor-widget" theme="primary-slim">
             <NitroCardHeaderView headerText={ LocalizeText('playlist.editor.title') } onCloseClick={ onClose } />
             <NitroCardContentView>
-                <div className="d-flex flex-row gap-2 h-100">
+                <div className="d-flex flex-row gap-1 h-100">
                     <div className="w-50 position-relative overflow-hidden h-100 rounded d-flex flex-column">
                         <DiskInventoryView addToPlaylist={ addToPlaylist } diskInventory={ diskInventory }/>
                     </div>

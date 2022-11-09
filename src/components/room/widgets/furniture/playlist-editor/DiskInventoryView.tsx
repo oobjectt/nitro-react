@@ -1,7 +1,7 @@
 import { IAdvancedMap } from '@nitrots/nitro-renderer';
 import { FC, useState } from 'react';
 import { GetConfiguration, GetNitroInstance, LocalizeText } from '../../../../../api';
-import { AutoGrid, Base, Button, Flex, LayoutGridItem } from '../../../../../common';
+import { AutoGrid, Base, Button, Flex, LayoutGridItem, Text } from '../../../../../common';
 
 export interface DiskInventoryViewProps
 {
@@ -19,7 +19,7 @@ export const DiskInventoryView: FC<DiskInventoryViewProps> = props =>
             <h2 className="ms-4">{ LocalizeText('playlist.editor.my.music') }</h2>
         </div>
         <div className="h-100 overflow-y-scroll mt-4 py-2">
-            <AutoGrid columnCount={ 5 } columnMinWidth={ 100 }>
+            <AutoGrid columnCount={ 3 } columnMinWidth={ 95 } gap={ 1 }>
                 { diskInventory && diskInventory.getKeys().map( (key, index) =>
                 {
                     const diskId = diskInventory.getKey(index);
@@ -30,7 +30,7 @@ export const DiskInventoryView: FC<DiskInventoryViewProps> = props =>
                         <LayoutGridItem key={ index } itemActive={ selectedItem === index } onClick={ () => setSelectedItem(prev => prev === index ? -1 : index) } classNames={ [ 'text-black' ] }>
                             <div className="disk-image flex-shrink-0 mb-n2">
                             </div>
-                            { songData?.name }
+                            <Text truncate fullWidth className="text-center">{ songData?.name }</Text>
                             { (selectedItem === index) &&
                                     <Flex position="absolute" className="bottom-0 mb-1 bg-secondary p-1 rounded" alignItems="center" justifyContent="center" gap={ 2 }>
                                         <Button onClick={ () => null } variant="light">
