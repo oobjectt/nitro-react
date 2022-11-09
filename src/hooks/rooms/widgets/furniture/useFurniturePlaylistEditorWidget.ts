@@ -6,6 +6,13 @@ import { useNotification } from '../../../notification';
 import { useFurniRemovedEvent } from '../../engine';
 import { useRoom } from '../../useRoom';
 
+const DISK_COLOR_RED_MIN:number = 130;
+const DISK_COLOR_RED_RANGE:number = 100;
+const DISK_COLOR_GREEN_MIN:number = 130;
+const DISK_COLOR_GREEN_RANGE:number = 100;
+const DISK_COLOR_BLUE_MIN:number = 130;
+const DISK_COLOR_BLUE_RANGE:number = 100;
+
 const useFurniturePlaylistEditorWidgetState = () =>
 {
     const [ objectId, setObjectId ] = useState(-1);
@@ -58,6 +65,40 @@ const useFurniturePlaylistEditorWidgetState = () =>
             }
         }
     });
+
+    const getDiskColour = (k:string): string => 
+    {
+        console.log(k.length);
+        var _local_2:number = 0;
+        var _local_3:number = 0;
+        var _local_4:number = 0;
+        var _local_5:number = 0;
+
+        while (_local_5 < k.length)
+        {
+            switch ((_local_5 % 3))
+            {
+                case 0:
+                    _local_2 = (_local_2 + ( k.charCodeAt(_local_5) * 37) );
+                    break;
+                case 1:
+                    _local_3 = (_local_3 + ( k.charCodeAt(_local_5) * 37) );
+                    break;
+                case 2:
+                    _local_4 = (_local_4 + ( k.charCodeAt(_local_5) * 37) );
+                    break;
+            }
+            _local_5++;
+        }
+
+        _local_2 = ((_local_2 % DISK_COLOR_RED_RANGE) + DISK_COLOR_RED_MIN);
+        _local_3 = ((_local_3 % DISK_COLOR_GREEN_RANGE) + DISK_COLOR_GREEN_MIN);
+        _local_4 = ((_local_4 % DISK_COLOR_BLUE_RANGE) + DISK_COLOR_BLUE_MIN);
+
+        return `rgb(${ _local_2 },${ _local_3 },${ _local_4 })`;
+    }
+
+
 
     useFurniRemovedEvent(((objectId !== -1) && (category !== -1)), event =>
     {
@@ -121,7 +162,7 @@ const useFurniturePlaylistEditorWidgetState = () =>
     useMessageEvent(FurnitureListRemovedEvent, onFurniListUpdated);
     useMessageEvent(FurnitureListAddOrUpdateEvent, onFurniListUpdated);
 
-    return { objectId, diskInventory, playlist, onClose, addToPlaylist, removeFromPlaylist, togglePlayPause, openCatalogButtonPressed };
+    return { objectId, diskInventory, playlist, onClose, addToPlaylist, removeFromPlaylist, togglePlayPause, openCatalogButtonPressed, getDiskColour };
 }
 
 export const useFurniturePlaylistEditorWidget = useFurniturePlaylistEditorWidgetState;

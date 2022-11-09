@@ -7,10 +7,11 @@ export interface DiskInventoryViewProps
 {
     diskInventory: IAdvancedMap<number, number>;
     addToPlaylist(diskId: number, slotNumber: number): void;
+    getDiskColour: (k: string) => string;
 }
 export const DiskInventoryView: FC<DiskInventoryViewProps> = props =>
 {
-    const { diskInventory = null, addToPlaylist = null } = props;
+    const { diskInventory = null, addToPlaylist = null, getDiskColour = null } = props;
     const [ selectedItem, setSelectedItem ] = useState<number>(-1);
 
     return (<>
@@ -28,7 +29,7 @@ export const DiskInventoryView: FC<DiskInventoryViewProps> = props =>
 
                     return (
                         <LayoutGridItem key={ index } itemActive={ selectedItem === index } onClick={ () => setSelectedItem(prev => prev === index ? -1 : index) } classNames={ [ 'text-black' ] }>
-                            <div className="disk-image flex-shrink-0 mb-n2">
+                            <div className="disk-image flex-shrink-0 mb-n2" style={ { backgroundColor: getDiskColour(songData?.songData) } }>
                             </div>
                             <Text truncate fullWidth className="text-center">{ songData?.name }</Text>
                             { (selectedItem === index) &&

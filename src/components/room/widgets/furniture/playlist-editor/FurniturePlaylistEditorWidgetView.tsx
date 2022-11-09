@@ -7,7 +7,7 @@ import { SongPlaylistView } from './SongPlaylistView';
 
 export const FurniturePlaylistEditorWidgetView: FC<{}> = props =>
 {
-    const { objectId = -1, playlist = null, diskInventory = null, onClose = null, togglePlayPause = null, removeFromPlaylist = null, addToPlaylist = null } = useFurniturePlaylistEditorWidget();
+    const { objectId = -1, playlist = null, diskInventory = null, onClose = null, togglePlayPause = null, removeFromPlaylist = null, addToPlaylist = null, getDiskColour = null } = useFurniturePlaylistEditorWidget();
 
     if(objectId === -1) return null;
 
@@ -17,10 +17,10 @@ export const FurniturePlaylistEditorWidgetView: FC<{}> = props =>
             <NitroCardContentView>
                 <div className="d-flex flex-row gap-1 h-100">
                     <div className="w-50 position-relative overflow-hidden h-100 rounded d-flex flex-column">
-                        <DiskInventoryView addToPlaylist={ addToPlaylist } diskInventory={ diskInventory }/>
+                        <DiskInventoryView addToPlaylist={ addToPlaylist } diskInventory={ diskInventory } getDiskColour={ getDiskColour }/>
                     </div>
                     <div className="w-50 position-relative overflow-hidden h-100 rounded d-flex flex-column">
-                        <SongPlaylistView furniId={ objectId } removeFromPlaylist={ removeFromPlaylist } playlist={ playlist } togglePlayPause={ togglePlayPause } />
+                        <SongPlaylistView furniId={ objectId } removeFromPlaylist={ removeFromPlaylist } playlist={ playlist } togglePlayPause={ togglePlayPause } getDiskColour={ getDiskColour } />
                     </div>
                 </div>
             </NitroCardContentView>
