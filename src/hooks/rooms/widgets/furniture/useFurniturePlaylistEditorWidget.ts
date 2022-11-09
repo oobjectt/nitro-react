@@ -1,6 +1,6 @@
 import { AddJukeboxDiskComposer, AdvancedMap, FurnitureListAddOrUpdateEvent, FurnitureListEvent, FurnitureListRemovedEvent, FurnitureMultiStateComposer, IAdvancedMap, IMessageEvent, ISongInfo, NotifyPlayedSongEvent, NowPlayingEvent, PlayListStatusEvent, RemoveJukeboxDiskComposer, RoomControllerLevel, RoomEngineTriggerWidgetEvent, SongDiskInventoryReceivedEvent } from '@nitrots/nitro-renderer';
 import { useState } from 'react';
-import { GetNitroInstance, GetRoomEngine, GetSessionDataManager, IsOwnerOfFurniture, LocalizeText, NotificationBubbleType, SendMessageComposer } from '../../../../api';
+import { GetNitroInstance, GetRoomEngine, GetSessionDataManager, IsOwnerOfFurniture, LocalizeText, NotificationAlertType, NotificationBubbleType, SendMessageComposer } from '../../../../api';
 import { useMessageEvent, useRoomEngineEvent, useSoundEvent } from '../../../events';
 import { useNotification } from '../../../notification';
 import { useFurniRemovedEvent } from '../../engine';
@@ -17,10 +17,11 @@ const useFurniturePlaylistEditorWidgetState = () =>
 {
     const [ objectId, setObjectId ] = useState(-1);
     const [ category, setCategory ] = useState(-1);
+    const [ currentPlayingIndex, setCurrentPlayingIndex ] = useState(-1);
     const [ diskInventory, setDiskInventory ] = useState<IAdvancedMap<number, number>>(new AdvancedMap());
     const [ playlist, setPlaylist ] = useState<ISongInfo[]>([]);
     const { roomSession = null } = useRoom();
-    const { showSingleBubble = null } = useNotification();
+    const { showSingleBubble = null, simpleAlert = null } = useNotification();
 
     const onClose = () =>
     {
@@ -107,10 +108,15 @@ const useFurniturePlaylistEditorWidgetState = () =>
 
     useSoundEvent<NowPlayingEvent>(NowPlayingEvent.NPE_SONG_CHANGED, event =>
     {
-
+        setCurrentPlayingIndex(event.position);
     });
 
     useSoundEvent<NowPlayingEvent>(NowPlayingEvent.NPE_USER_PLAY_SONG, event =>
+    {
+
+    });
+
+    useSoundEvent<NowPlayingEvent>(NowPlayingEvent.NPW_USER_STOP_SONG, event =>
     {
 
     });
@@ -128,6 +134,11 @@ const useFurniturePlaylistEditorWidgetState = () =>
     useSoundEvent<PlayListStatusEvent>(PlayListStatusEvent.PLUE_PLAY_LIST_UPDATED, event =>
     {
         setPlaylist(GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.entries.concat())
+    });
+
+    useSoundEvent<PlayListStatusEvent>(PlayListStatusEvent.PLUE_PLAY_LIST_FULL, event =>
+    {
+        simpleAlert(LocalizeText('playlist.editor.alert.playlist.full'), NotificationAlertType.ALERT, '', '', LocalizeText('playlist.editor.alert.playlist.full.title'));
     });
 
     const onFurniListUpdated = (event : IMessageEvent) =>
