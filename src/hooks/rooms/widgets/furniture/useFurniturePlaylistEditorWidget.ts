@@ -67,7 +67,6 @@ const useFurniturePlaylistEditorWidgetState = () =>
 
     const getDiskColour = (k:string): string => 
     {
-        console.log(k.length);
         var _local_2:number = 0;
         var _local_3:number = 0;
         var _local_4:number = 0;
