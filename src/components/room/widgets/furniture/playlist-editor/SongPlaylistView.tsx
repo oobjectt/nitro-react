@@ -1,7 +1,7 @@
 import { ISongInfo } from '@nitrots/nitro-renderer';
 import { FC, useState } from 'react';
 import { GetConfiguration, LocalizeText } from '../../../../../api';
-import { AutoGrid, LayoutGridItem } from '../../../../../common';
+import { Base, Button, Flex } from '../../../../../common';
 
 export interface SongPlaylistViewProps
 {
@@ -17,13 +17,33 @@ export const SongPlaylistView: FC<SongPlaylistViewProps> = props =>
     const [ selectedItem, setSelectedItem ] = useState<number>(-1);
 
 
+    const action = (index) => 
+    {
+        if(selectedItem === index) removeFromPlaylist(index);
+        else 
+        {
+
+        }
+    }
+
+
     return (<>
         <div className="bg-primary py-3 container-fluid justify-content-center d-flex rounded">
             <img src={ GetConfiguration('image.library.url') + 'playlist/title_playlist.gif' } className="playlist-img" />
             <h2 className="ms-4">{ LocalizeText('playlist.editor.playlist') }</h2>
         </div>
-        <div className="h-100 overflow-y-scroll">
-            <AutoGrid columnCount={ 5 }>
+        <div className="h-100 overflow-y-scroll py-2">
+            <Flex column gap={ 2 }>
+                { playlist && playlist.map( (songInfo, index) =>
+                {
+                    return <Flex gap={ 1 } key={ index } className={ 'text-black cursor-pointer ' + (selectedItem === index ? 'border border-muted border-2 rounded' : 'border-2') } alignItems="center" onClick={ () => setSelectedItem(prev => prev === index ? -1 : index) }>
+                        <Base onClick={ () => action(index) } className={ 'disk-2 ' + (selectedItem === index ? 'selected-song' : '') }/>
+                        { songInfo.name }
+                    </Flex>
+                }) }
+
+            </Flex>
+            { /* <AutoGrid columnCount={ 5 }>
                 { playlist && playlist.map( (songInfo, index) =>
                 {
                     return (
@@ -36,7 +56,7 @@ export const SongPlaylistView: FC<SongPlaylistViewProps> = props =>
                             </div>
                         </LayoutGridItem>)
                 }) }
-            </AutoGrid>
+            </AutoGrid> */ }
         </div>
         { (!playlist || playlist.length === 0 ) &&
         <><div className="playlist-bottom text-black p-1 ms-5">
@@ -46,7 +66,7 @@ export const SongPlaylistView: FC<SongPlaylistViewProps> = props =>
         <img src={ GetConfiguration('image.library.url') + 'playlist/background_add_songs.gif' } className="add-songs" /></>
         }
         { (playlist && playlist.length > 0) &&
-            <button onClick={ () => togglePlayPause(furniId, selectedItem !== -1 ? selectedItem : 0 ) }>Play/Pause</button>
+            <Button variant="success" size="lg" onClick={ () => togglePlayPause(furniId, selectedItem !== -1 ? selectedItem : 0 ) }>{ LocalizeText('playlist.editor.button.play.now') }</Button>
         }
 
     </>);

@@ -1,7 +1,7 @@
 import { IAdvancedMap } from '@nitrots/nitro-renderer';
 import { FC, useState } from 'react';
 import { GetConfiguration, GetNitroInstance, LocalizeText } from '../../../../../api';
-import { AutoGrid, LayoutGridItem } from '../../../../../common';
+import { AutoGrid, Base, Button, Flex, LayoutGridItem } from '../../../../../common';
 
 export interface DiskInventoryViewProps
 {
@@ -18,8 +18,8 @@ export const DiskInventoryView: FC<DiskInventoryViewProps> = props =>
             <img src={ GetConfiguration('image.library.url') + 'playlist/title_mymusic.gif' } className="my-music" />
             <h2 className="ms-4">{ LocalizeText('playlist.editor.my.music') }</h2>
         </div>
-        <div className="h-100 overflow-y-scroll mt-4">
-            <AutoGrid columnCount={ 5 }>
+        <div className="h-100 overflow-y-scroll mt-4 py-2">
+            <AutoGrid columnCount={ 5 } columnMinWidth={ 100 }>
                 { diskInventory && diskInventory.getKeys().map( (key, index) =>
                 {
                     const diskId = diskInventory.getKey(index);
@@ -28,12 +28,19 @@ export const DiskInventoryView: FC<DiskInventoryViewProps> = props =>
 
                     return (
                         <LayoutGridItem key={ index } itemActive={ selectedItem === index } onClick={ () => setSelectedItem(prev => prev === index ? -1 : index) } classNames={ [ 'text-black' ] }>
-                            <div className="disk-image">
-                                { songData?.name }
-                                { (selectedItem === index) &&
-                                    <><button onClick={ () => addToPlaylist(diskId, GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.length) }>Add</button></>
-                                }
+                            <div className="disk-image flex-shrink-0 mb-n2">
                             </div>
+                            { songData?.name }
+                            { (selectedItem === index) &&
+                                    <Flex position="absolute" className="bottom-0 mb-1 bg-secondary p-1 rounded" alignItems="center" justifyContent="center" gap={ 2 }>
+                                        <Button onClick={ () => null } variant="light">
+                                            <Base className={ false ? 'pause-btn' : 'preview-song' }/>
+                                        </Button>
+                                        <Button onClick={ () => addToPlaylist(diskId, GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.length) } variant="light">
+                                            <Base className="move-disk"/>
+                                        </Button>
+                                    </Flex>
+                            }
                         </LayoutGridItem>)
                 }) }
             </AutoGrid>
