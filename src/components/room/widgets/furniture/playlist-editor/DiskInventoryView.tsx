@@ -46,8 +46,8 @@ export const DiskInventoryView: FC<DiskInventoryViewProps> = props =>
                             <Text truncate fullWidth className="text-center">{ songData?.name }</Text>
                             { (selectedItem === index) &&
                                     <Flex position="absolute" className="bottom-0 mb-1 bg-secondary p-1 rounded" alignItems="center" justifyContent="center" gap={ 2 }>
-                                        <Button onClick={ () => previewSong(previewSongId !== -1 ? -1 : songId ) } variant="light">
-                                            <Base className={ previewSongId !== -1 ? 'pause-btn' : 'preview-song' }/>
+                                        <Button onClick={ () => previewSong(previewSongId === songId ? -1 : songId ) } variant="light">
+                                            <Base className={ previewSongId === songId ? 'pause-btn' : 'preview-song' }/>
                                         </Button>
                                         <Button onClick={ () => addToPlaylist(diskId, GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.length) } variant="light">
                                             <Base className="move-disk"/>

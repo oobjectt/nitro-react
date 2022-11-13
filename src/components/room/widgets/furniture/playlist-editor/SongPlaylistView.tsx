@@ -19,7 +19,7 @@ export const SongPlaylistView: FC<SongPlaylistViewProps> = props =>
     const [ selectedItem, setSelectedItem ] = useState<number>(-1);
 
 
-    const action = (index) =>
+    const action = (index: number) =>
     {
         if(selectedItem === index) removeFromPlaylist(index);
     }

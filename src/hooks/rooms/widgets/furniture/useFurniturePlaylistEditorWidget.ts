@@ -57,6 +57,7 @@ const useFurniturePlaylistEditorWidgetState = () =>
                     _local_3.soundObject.fadeOutSeconds = 0;
                 }
             } */
+            GetNitroInstance().soundManager.musicController?.stop(MusicPriorities.PRIORITY_SONG_PLAY);
             GetNitroInstance().soundManager.musicController?.playSong(previewSongId, MusicPriorities.PRIORITY_SONG_PLAY, 0, 0, 0, 0);
         }
     }
@@ -91,33 +92,33 @@ const useFurniturePlaylistEditorWidgetState = () =>
 
     const getDiskColour = (k:string): string =>
     {
-        var _local_2:number = 0;
-        var _local_3:number = 0;
-        var _local_4:number = 0;
-        var _local_5:number = 0;
+        let r:number = 0;
+        let g:number = 0;
+        let b:number = 0;
+        let index:number = 0;
 
-        while (_local_5 < k.length)
+        while (index < k.length)
         {
-            switch ((_local_5 % 3))
+            switch ((index % 3))
             {
                 case 0:
-                    _local_2 = (_local_2 + ( k.charCodeAt(_local_5) * 37) );
+                    r = (r + ( k.charCodeAt(index) * 37) );
                     break;
                 case 1:
-                    _local_3 = (_local_3 + ( k.charCodeAt(_local_5) * 37) );
+                    g = (g + ( k.charCodeAt(index) * 37) );
                     break;
                 case 2:
-                    _local_4 = (_local_4 + ( k.charCodeAt(_local_5) * 37) );
+                    b = (b + ( k.charCodeAt(index) * 37) );
                     break;
             }
-            _local_5++;
+            index++;
         }
 
-        _local_2 = ((_local_2 % DISK_COLOR_RED_RANGE) + DISK_COLOR_RED_MIN);
-        _local_3 = ((_local_3 % DISK_COLOR_GREEN_RANGE) + DISK_COLOR_GREEN_MIN);
-        _local_4 = ((_local_4 % DISK_COLOR_BLUE_RANGE) + DISK_COLOR_BLUE_MIN);
+        r = ((r % DISK_COLOR_RED_RANGE) + DISK_COLOR_RED_MIN);
+        g = ((g % DISK_COLOR_GREEN_RANGE) + DISK_COLOR_GREEN_MIN);
+        b = ((b % DISK_COLOR_BLUE_RANGE) + DISK_COLOR_BLUE_MIN);
 
-        return `rgb(${ _local_2 },${ _local_3 },${ _local_4 })`;
+        return `rgb(${ r },${ g },${ b })`;
     }
 
 
