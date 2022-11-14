@@ -1,6 +1,6 @@
 import { ISongInfo } from '@nitrots/nitro-renderer';
 import { FC, useState } from 'react';
-import { GetConfiguration, LocalizeText } from '../../../../../api';
+import { GetConfiguration, GetDiskColor, LocalizeText } from '../../../../../api';
 import { Base, Button, Flex, Text } from '../../../../../common';
 
 export interface SongPlaylistViewProps
@@ -10,14 +10,12 @@ export interface SongPlaylistViewProps
     currentPlayingIndex: number;
     removeFromPlaylist(slotNumber: number): void;
     togglePlayPause(furniId: number, position: number): void;
-    getDiskColour: (k: string) => string;
 }
 
 export const SongPlaylistView: FC<SongPlaylistViewProps> = props =>
 {
-    const { furniId = -1, playlist = null, currentPlayingIndex = -1, removeFromPlaylist = null, togglePlayPause = null, getDiskColour = null } = props;
+    const { furniId = -1, playlist = null, currentPlayingIndex = -1, removeFromPlaylist = null, togglePlayPause = null } = props;
     const [ selectedItem, setSelectedItem ] = useState<number>(-1);
-
 
     const action = (index: number) =>
     {
@@ -29,7 +27,6 @@ export const SongPlaylistView: FC<SongPlaylistViewProps> = props =>
         togglePlayPause(furniId, selectedItem !== -1 ? selectedItem : 0 )
     }
 
-
     return (<>
         <div className="bg-primary py-3 container-fluid justify-content-center d-flex rounded">
             <img src={ GetConfiguration('image.library.url') + 'playlist/title_playlist.gif' } className="playlist-img" />
@@ -40,7 +37,7 @@ export const SongPlaylistView: FC<SongPlaylistViewProps> = props =>
                 { playlist && playlist.map( (songInfo, index) =>
                 {
                     return <Flex gap={ 1 } key={ index } className={ 'text-black cursor-pointer ' + (selectedItem === index ? 'border border-muted border-2 rounded' : 'border-2') } alignItems="center" onClick={ () => setSelectedItem(prev => prev === index ? -1 : index) }>
-                        <Base onClick={ () => action(index) } className={ 'disk-2 ' + (selectedItem === index ? 'selected-song' : '') } style={ { backgroundColor: (selectedItem === index ? '' : getDiskColour(songInfo.songData)) } }/>
+                        <Base onClick={ () => action(index) } className={ 'disk-2 ' + (selectedItem === index ? 'selected-song' : '') } style={ { backgroundColor: (selectedItem === index ? '' : GetDiskColor(songInfo.songData)) } }/>
                         { songInfo.name }
                     </Flex>
                 }) }

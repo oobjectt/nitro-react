@@ -1,30 +1,50 @@
-import { IAdvancedMap } from '@nitrots/nitro-renderer';
-import { FC, useEffect, useState } from 'react';
-import { GetConfiguration, GetNitroInstance, LocalizeText } from '../../../../../api';
+import { IAdvancedMap, MusicPriorities } from '@nitrots/nitro-renderer';
+import { FC, MouseEvent, useCallback, useEffect, useState } from 'react';
+import { GetConfiguration, GetDiskColor, GetNitroInstance, LocalizeText } from '../../../../../api';
 import { AutoGrid, Base, Button, Flex, LayoutGridItem, Text } from '../../../../../common';
 
 export interface DiskInventoryViewProps
 {
     diskInventory: IAdvancedMap<number, number>;
-    previewSongId: number;
-    addToPlaylist(diskId: number, slotNumber: number): void;
-    getDiskColour: (k: string) => string;
-    previewSong(previewSongId: number): void;
+    addToPlaylist: (diskId: number, slotNumber: number) => void;
 }
+
 export const DiskInventoryView: FC<DiskInventoryViewProps> = props =>
 {
-    const { diskInventory = null, previewSongId = -1, addToPlaylist = null, getDiskColour = null, previewSong = null } = props;
+    const { diskInventory = null, addToPlaylist = null } = props;
     const [ selectedItem, setSelectedItem ] = useState<number>(-1);
+    const [ previewSongId, setPreviewSongId ] = useState<number>(-1);
+
+    const previewSong = useCallback((event: MouseEvent, songId: number) =>
+    {
+        event.stopPropagation();
+
+        setPreviewSongId(prevValue => (prevValue === songId) ? -1 : songId);
+    }, []);
+
+    const addSong = useCallback((event: MouseEvent, diskId: number) =>
+    {
+        event.stopPropagation();
+
+        addToPlaylist(diskId, GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.length)
+    }, [ addToPlaylist ]);
 
     useEffect(() =>
     {
-        if(selectedItem !== -1 || previewSongId === -1) return;
+        if(previewSongId === -1) return;
 
-        const index = diskInventory.getValues().findIndex( item => item === previewSongId);
+        GetNitroInstance().soundManager.musicController?.playSong(previewSongId, MusicPriorities.PRIORITY_SONG_PLAY, 0, 0, 0, 0);
 
-        if(index !== -1) setSelectedItem(index);
+        return () =>
+        {
+            GetNitroInstance().soundManager.musicController?.stop(MusicPriorities.PRIORITY_SONG_PLAY);
+        }
+    }, [ previewSongId ]);
 
-    }, [ diskInventory, previewSongId, selectedItem ]);
+    useEffect(() =>
+    {
+        return () => setPreviewSongId(-1);
+    }, []);
 
     return (<>
         <div className="bg-success py-3 container-fluid justify-content-center d-flex rounded">
@@ -40,16 +60,16 @@ export const DiskInventoryView: FC<DiskInventoryViewProps> = props =>
                     const songData = GetNitroInstance().soundManager.musicController?.getSongInfo(songId);
 
                     return (
-                        <LayoutGridItem key={ index } itemActive={ selectedItem === index } onClick={ () => setSelectedItem(prev => prev === index ? -1 : index) } classNames={ [ 'text-black' ] }>
-                            <div className="disk-image flex-shrink-0 mb-n2" style={ { backgroundColor: getDiskColour(songData?.songData) } }>
+                        <LayoutGridItem key={ index } itemActive={ (selectedItem === index) } onClick={ () => setSelectedItem(prev => prev === index ? -1 : index) } classNames={ [ 'text-black' ] }>
+                            <div className="disk-image flex-shrink-0 mb-n2" style={ { backgroundColor: GetDiskColor(songData?.songData) } }>
                             </div>
                             <Text truncate fullWidth className="text-center">{ songData?.name }</Text>
                             { (selectedItem === index) &&
                                     <Flex position="absolute" className="bottom-0 mb-1 bg-secondary p-1 rounded" alignItems="center" justifyContent="center" gap={ 2 }>
-                                        <Button onClick={ () => previewSong(previewSongId === songId ? -1 : songId ) } variant="light">
-                                            <Base className={ previewSongId === songId ? 'pause-btn' : 'preview-song' }/>
+                                        <Button onClick={ event => previewSong(event, songId) } variant="light">
+                                            <Base className={ (previewSongId === songId) ? 'pause-btn' : 'preview-song' }/>
                                         </Button>
-                                        <Button onClick={ () => addToPlaylist(diskId, GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.length) } variant="light">
+                                        <Button onClick={ event => addSong(event, diskId) } variant="light">
                                             <Base className="move-disk"/>
                                         </Button>
                                     </Flex>

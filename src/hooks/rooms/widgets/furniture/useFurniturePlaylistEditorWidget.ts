@@ -1,24 +1,16 @@
-import { AddJukeboxDiskComposer, AdvancedMap, FurnitureListAddOrUpdateEvent, FurnitureListEvent, FurnitureListRemovedEvent, FurnitureMultiStateComposer, IAdvancedMap, IMessageEvent, ISongInfo, MusicPriorities, NotifyPlayedSongEvent, NowPlayingEvent, PlayListStatusEvent, RemoveJukeboxDiskComposer, RoomControllerLevel, RoomEngineTriggerWidgetEvent, SongDiskInventoryReceivedEvent } from '@nitrots/nitro-renderer';
-import { useState } from 'react';
+import { AddJukeboxDiskComposer, AdvancedMap, FurnitureListAddOrUpdateEvent, FurnitureListEvent, FurnitureListRemovedEvent, FurnitureMultiStateComposer, IAdvancedMap, IMessageEvent, ISongInfo, NotifyPlayedSongEvent, NowPlayingEvent, PlayListStatusEvent, RemoveJukeboxDiskComposer, RoomControllerLevel, RoomEngineTriggerWidgetEvent, SongDiskInventoryReceivedEvent } from '@nitrots/nitro-renderer';
+import { useCallback, useState } from 'react';
 import { GetNitroInstance, GetRoomEngine, GetSessionDataManager, IsOwnerOfFurniture, LocalizeText, NotificationAlertType, NotificationBubbleType, SendMessageComposer } from '../../../../api';
 import { useMessageEvent, useRoomEngineEvent, useSoundEvent } from '../../../events';
 import { useNotification } from '../../../notification';
 import { useFurniRemovedEvent } from '../../engine';
 import { useRoom } from '../../useRoom';
 
-const DISK_COLOR_RED_MIN:number = 130;
-const DISK_COLOR_RED_RANGE:number = 100;
-const DISK_COLOR_GREEN_MIN:number = 130;
-const DISK_COLOR_GREEN_RANGE:number = 100;
-const DISK_COLOR_BLUE_MIN:number = 130;
-const DISK_COLOR_BLUE_RANGE:number = 100;
-
 const useFurniturePlaylistEditorWidgetState = () =>
 {
     const [ objectId, setObjectId ] = useState(-1);
     const [ category, setCategory ] = useState(-1);
     const [ currentPlayingIndex, setCurrentPlayingIndex ] = useState(-1);
-    const [ previewSongId, setPreviewSongId ] = useState(-1);
     const [ diskInventory, setDiskInventory ] = useState<IAdvancedMap<number, number>>(new AdvancedMap());
     const [ playlist, setPlaylist ] = useState<ISongInfo[]>([]);
     const { roomSession = null } = useRoom();
@@ -30,47 +22,17 @@ const useFurniturePlaylistEditorWidgetState = () =>
         setCategory(-1);
     }
 
-    const addToPlaylist = (diskId: number, slotNumber: number) => SendMessageComposer(new AddJukeboxDiskComposer(diskId, slotNumber));
+    const addToPlaylist = useCallback((diskId: number, slotNumber: number) => SendMessageComposer(new AddJukeboxDiskComposer(diskId, slotNumber)), []);
 
-    const removeFromPlaylist = (slotNumber: number) => SendMessageComposer(new RemoveJukeboxDiskComposer(slotNumber));
+    const removeFromPlaylist = useCallback((slotNumber: number) => SendMessageComposer(new RemoveJukeboxDiskComposer(slotNumber)), []);
 
-    const togglePlayPause = (furniId: number, position: number) =>
-    {
-        SendMessageComposer(new FurnitureMultiStateComposer(furniId, position));
-    }
-
-    const previewSong = (previewSongId: number) =>
-    {
-        if(previewSongId === -1)
-        {
-            GetNitroInstance().soundManager.musicController?.stop(MusicPriorities.PRIORITY_SONG_PLAY);
-            setPreviewSongId(-1);
-        }
-        else
-        {
-            /* const _local_2 = GetNitroInstance().soundManager.musicController?.getSongIdPlayingAtPriority(MusicPriorities.PRIORITY_ROOM_PLAYLIST);
-            if (_local_2 != -1)
-            {
-                const _local_3 = GetNitroInstance().soundManager.musicController?.getSongInfo(_local_2);
-                if (_local_3.soundObject != null)
-                {
-                    _local_3.soundObject.fadeOutSeconds = 0;
-                }
-            } */
-            GetNitroInstance().soundManager.musicController?.stop(MusicPriorities.PRIORITY_SONG_PLAY);
-            GetNitroInstance().soundManager.musicController?.playSong(previewSongId, MusicPriorities.PRIORITY_SONG_PLAY, 0, 0, 0, 0);
-        }
-    }
-
-    const openCatalogButtonPressed = () =>
-    {}
+    const togglePlayPause = useCallback((furniId: number, position: number) => SendMessageComposer(new FurnitureMultiStateComposer(furniId, position)), []);
 
     useRoomEngineEvent<RoomEngineTriggerWidgetEvent>(RoomEngineTriggerWidgetEvent.REQUEST_PLAYLIST_EDITOR, event =>
     {
         const roomObject = GetRoomEngine().getRoomObject(event.roomId, event.objectId, event.category);
 
         if(!roomObject) return;
-        console.log(event);
 
         if(IsOwnerOfFurniture(roomObject))
         {
@@ -80,48 +42,12 @@ const useFurniturePlaylistEditorWidgetState = () =>
 
             GetNitroInstance().soundManager.musicController?.requestUserSongDisks();
             GetNitroInstance().soundManager.musicController?.getRoomItemPlaylist()?.requestPlayList();
+
+            return;
         }
-        else
-        {
-            if(roomSession.isRoomOwner || (roomSession.controllerLevel >= RoomControllerLevel.GUEST) || GetSessionDataManager().isModerator)
-            {
-                SendMessageComposer(new FurnitureMultiStateComposer(event.objectId, -2));
-            }
-        }
+        
+        if(roomSession.isRoomOwner || (roomSession.controllerLevel >= RoomControllerLevel.GUEST) || GetSessionDataManager().isModerator) SendMessageComposer(new FurnitureMultiStateComposer(event.objectId, -2));
     });
-
-    const getDiskColour = (k:string): string =>
-    {
-        let r:number = 0;
-        let g:number = 0;
-        let b:number = 0;
-        let index:number = 0;
-
-        while (index < k.length)
-        {
-            switch ((index % 3))
-            {
-                case 0:
-                    r = (r + ( k.charCodeAt(index) * 37) );
-                    break;
-                case 1:
-                    g = (g + ( k.charCodeAt(index) * 37) );
-                    break;
-                case 2:
-                    b = (b + ( k.charCodeAt(index) * 37) );
-                    break;
-            }
-            index++;
-        }
-
-        r = ((r % DISK_COLOR_RED_RANGE) + DISK_COLOR_RED_MIN);
-        g = ((g % DISK_COLOR_GREEN_RANGE) + DISK_COLOR_GREEN_MIN);
-        b = ((b % DISK_COLOR_BLUE_RANGE) + DISK_COLOR_BLUE_MIN);
-
-        return `rgb(${ r },${ g },${ b })`;
-    }
-
-
 
     useFurniRemovedEvent(((objectId !== -1) && (category !== -1)), event =>
     {
@@ -132,17 +58,8 @@ const useFurniturePlaylistEditorWidgetState = () =>
 
     useSoundEvent<NowPlayingEvent>(NowPlayingEvent.NPE_SONG_CHANGED, event =>
     {
+        console.log(event);
         setCurrentPlayingIndex(event.position);
-    });
-
-    useSoundEvent<NowPlayingEvent>(NowPlayingEvent.NPE_USER_PLAY_SONG, event =>
-    {
-        setPreviewSongId(event.id);
-    });
-
-    useSoundEvent<NowPlayingEvent>(NowPlayingEvent.NPW_USER_STOP_SONG, event =>
-    {
-        setPreviewSongId(-1);
     });
 
     useSoundEvent<NotifyPlayedSongEvent>(NotifyPlayedSongEvent.NOTIFY_PLAYED_SONG, event =>
@@ -165,9 +82,8 @@ const useFurniturePlaylistEditorWidgetState = () =>
         simpleAlert(LocalizeText('playlist.editor.alert.playlist.full'), NotificationAlertType.ALERT, '', '', LocalizeText('playlist.editor.alert.playlist.full.title'));
     });
 
-    const onFurniListUpdated = (event : IMessageEvent) =>
+    const onFurniListUpdated = useCallback((event : IMessageEvent) =>
     {
-        console.log(event);
         if(event instanceof FurnitureListEvent)
         {
             if(event.getParser().fragmentNumber === 0)
@@ -179,13 +95,13 @@ const useFurniturePlaylistEditorWidgetState = () =>
         {
             GetNitroInstance().soundManager.musicController?.requestUserSongDisks();
         }
-    }
+    }, []);
 
     useMessageEvent(FurnitureListEvent, onFurniListUpdated);
     useMessageEvent(FurnitureListRemovedEvent, onFurniListUpdated);
     useMessageEvent(FurnitureListAddOrUpdateEvent, onFurniListUpdated);
 
-    return { objectId, diskInventory, playlist, currentPlayingIndex, previewSongId, onClose, addToPlaylist, removeFromPlaylist, togglePlayPause, openCatalogButtonPressed, getDiskColour, previewSong };
+    return { objectId, diskInventory, playlist, currentPlayingIndex, onClose, addToPlaylist, removeFromPlaylist, togglePlayPause };
 }
 
 export const useFurniturePlaylistEditorWidget = useFurniturePlaylistEditorWidgetState;
