@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChatBubbleMessage, ChatEntryType, ChatHistoryCurrentDate, GetAvatarRenderManager, GetConfiguration, GetRoomEngine, GetRoomObjectScreenLocation, IRoomChatSettings, LocalizeText, PlaySound, RoomChatFormatter } from '../../../api';
 import { useMessageEvent, useRoomEngineEvent, useRoomSessionManagerEvent } from '../../events';
 import { useRoom } from '../useRoom';
-import { useChatHistory } from './../../chat-history/useChatHistory';
+import { useChatHistory } from './../../chat-history';
 
 const avatarColorCache: Map<string, number> = new Map();
 const avatarImageCache: Map<string, string> = new Map();
@@ -22,6 +22,7 @@ const useChatWidgetState = () =>
     const { roomSession = null } = useRoom();
     const { addChatEntry } = useChatHistory();
     const isDisposed = useRef(false);
+    const pendingChats = useRef<ChatBubbleMessage[]>([]);
 
     const getScrollSpeed = useMemo(() =>
     {
@@ -93,46 +94,6 @@ const useChatWidgetState = () =>
         }
 
         return existing;
-    }
-
-    const removeHiddenChats = () =>
-    {
-        setChatMessages(prevValue =>
-        {
-            if(prevValue)
-            {
-                const newMessages = prevValue.filter(chat => ((chat.top > (-(chat.height) * 2))));
-
-                if(newMessages.length !== prevValue.length) return newMessages;
-            }
-
-            return prevValue;
-        })
-    }
-
-    const moveAllChatsUp = (amount: number) =>
-    {
-        setChatMessages(prevValue =>
-        {
-            if(prevValue)
-            {
-                prevValue.forEach(chat =>
-                {
-                    if(chat.skipMovement)
-                    {
-                        chat.skipMovement = false;
-            
-                        return;
-                    }
-            
-                    chat.top -= amount;
-                });
-            }
-
-            return prevValue;
-        });
-
-        removeHiddenChats();
     }
 
     useRoomSessionManagerEvent<RoomSessionChatEvent>(RoomSessionChatEvent.CHAT_EVENT, event =>
@@ -248,6 +209,7 @@ const useChatWidgetState = () =>
             color);
 
         setChatMessages(prevValue => [ ...prevValue, chatMessage ]);
+        pendingChats?.current?.push(chatMessage);
         addChatEntry({ id: -1, entityId: userData.roomIndex, name: username, imageUrl, style: styleId, chatType: chatType, entityType: userData.type, message: formattedText, timestamp: ChatHistoryCurrentDate(), type: ChatEntryType.TYPE_CHAT, roomId: roomSession.roomId, color });
     });
 
@@ -286,7 +248,7 @@ const useChatWidgetState = () =>
         }
     }, []);
 
-    return { chatMessages, setChatMessages, chatSettings, getScrollSpeed, removeHiddenChats, moveAllChatsUp };
+    return { chatMessages, setChatMessages, chatSettings, getScrollSpeed, pendingChats };
 }
 
 export const useChatWidget = useChatWidgetState;
