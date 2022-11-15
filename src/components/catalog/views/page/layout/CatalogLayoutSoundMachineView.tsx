@@ -27,7 +27,7 @@ export const CatalogLayoutSoundMachineView: FC<CatalogLayoutProps> = props =>
         const parser = event.getParser();
 
         if(parser.officialSongId !== officialSongId) return;
-        
+
         setSongId(parser.songId);
     });
 
@@ -52,11 +52,14 @@ export const CatalogLayoutSoundMachineView: FC<CatalogLayoutProps> = props =>
                 setOfficialSongId(product.extraParam);
                 SendMessageComposer(new GetOfficialSongIdMessageComposer(product.extraParam));
             }
-
-            return;
         }
-        
-        setSongId(-1);
+        else
+        {
+            setOfficialSongId('');
+            setSongId(-1);
+        }
+
+        return () => GetNitroInstance().soundManager.musicController?.stop(MusicPriorities.PRIORITY_PURCHASE_PREVIEW);
     }, [ currentOffer ]);
 
     useEffect(() =>
@@ -92,7 +95,8 @@ export const CatalogLayoutSoundMachineView: FC<CatalogLayoutProps> = props =>
                             <Column grow gap={ 1 }>
                                 <CatalogLimitedItemWidgetView fullWidth />
                                 <Text grow truncate>{ currentOffer.localizationName }</Text>
-                                <Button onClick={ () => previewSong(songId) }>{ LocalizeText('play_preview_button') }</Button>
+                                { songId > -1 && <Button onClick={ () => previewSong(songId) }>{ LocalizeText('play_preview_button') }</Button>
+                                }
                                 <Flex justifyContent="between">
                                     <Column gap={ 1 }>
                                         <CatalogSpinnerWidgetView />
