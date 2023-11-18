@@ -33,6 +33,8 @@ export class FloorplanEditor
         canvas.height = height;
         canvas.width = width;
 
+        canvas.style.touchAction = 'none';
+
         this._renderer = canvas.getContext('2d');
 
         this._image = new Image();
@@ -332,7 +334,8 @@ export class FloorplanEditor
 
     public clearCanvas(): void
     {
-        this.renderer.clearRect(0, 0, this._renderer.canvas.width, this._renderer.canvas.height);
+        this.renderer.fillStyle = '0x000000';
+        this.renderer.fillRect(0, 0, this._renderer.canvas.width, this._renderer.canvas.height);
     }
 
     public get renderer(): CanvasRenderingContext2D
